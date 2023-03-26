@@ -13,9 +13,8 @@ data class TrainingRecord(
     @ColumnInfo val part: String,
     @ColumnInfo val name: String,
     @ColumnInfo val set: Int,
-    @ColumnInfo val rep: Int,
-    @ColumnInfo val wt: Int,
-    @ColumnInfo val breakT: Int
+    @ColumnInfo val rep: String,
+    @ColumnInfo val wt: String,
 ): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
@@ -23,9 +22,8 @@ data class TrainingRecord(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readInt(),
-        parcel.readInt(),
-        parcel.readInt(),
-        parcel.readInt()
+        parcel.readString()!!,
+        parcel.readString()!!,
     ) {
     }
 
@@ -35,9 +33,8 @@ data class TrainingRecord(
         parcel.writeString(part)
         parcel.writeString(name)
         parcel.writeInt(set)
-        parcel.writeInt(rep)
-        parcel.writeInt(wt)
-        parcel.writeInt(breakT)
+        parcel.writeString(rep)
+        parcel.writeString(wt)
     }
 
     override fun describeContents(): Int {

@@ -3,7 +3,9 @@ package com.example.fitness
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.example.fitness.databinding.ActivityBreakBinding
 import java.util.*
 import kotlin.concurrent.timer
@@ -20,8 +22,15 @@ class BreakActivity : AppCompatActivity(), View.OnClickListener {
         binding = ActivityBreakBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        var time = intent.getIntExtra("Break", 0)
+        var time = intent.getIntExtra("Break", -1)
         val set = intent.getIntExtra("Set", -1)
+
+        //값이 안넘어왔을 경우
+        if(time == -1 || set == -1) {
+            Log.e(TAG, "There is no time value or setting value.")
+            Toast.makeText(this, "다시 시도해 주세요", Toast.LENGTH_SHORT).show()
+            stopTimeTask(false)
+        }
 
         binding.textBreakNum.text = "$time"
         binding.textBreakSet.text = "$set"
@@ -31,11 +40,12 @@ class BreakActivity : AppCompatActivity(), View.OnClickListener {
         startTimeTask(time)
     }
 
+    //Button Listener
     private fun setBtnListener() {
         binding.btnBreakStop.setOnClickListener(this)
     }
 
-    //Timer
+    //Timer 시작
     private fun startTimeTask(outTime: Int) {
         var inTime = outTime + 1    //오차 방지
         timerTask = timer(period = 1000) {  //1000ms == 1s
@@ -56,6 +66,7 @@ class BreakActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    //Timer 정지 (isFinish : true -> 쉬는 시간 끝, false -> 중간에 정지)
     private fun stopTimeTask(isFinish: Boolean) {
         timerTask?.cancel()
         val back = Intent()
@@ -65,6 +76,7 @@ class BreakActivity : AppCompatActivity(), View.OnClickListener {
         finish()
     }
 
+    //ProgressBar
     private fun setProgressBar(time: Int) {
         binding.progressBarBreakRing.min = 0
         binding.progressBarBreakRing.max = time
