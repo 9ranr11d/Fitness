@@ -11,7 +11,7 @@ import java.util.*
 import kotlin.concurrent.timer
 
 class BreakActivity : AppCompatActivity(), View.OnClickListener {
-    private val TAG = "BreakActivity"
+    private val tag = javaClass.simpleName
     private lateinit var binding: ActivityBreakBinding
 
     private var timerTask: Timer? = null
@@ -22,12 +22,12 @@ class BreakActivity : AppCompatActivity(), View.OnClickListener {
         binding = ActivityBreakBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        var time = intent.getIntExtra("Break", -1)
+        val time = intent.getIntExtra("Break", -1)
         val set = intent.getIntExtra("Set", -1)
 
-        //값이 안넘어왔을 경우
+        //값이 안 넘어왔을 경우
         if(time == -1 || set == -1) {
-            Log.e(TAG, "There is no time value or setting value.")
+            Log.e(tag, "There is no time value or setting value.")
             Toast.makeText(this, "다시 시도해 주세요", Toast.LENGTH_SHORT).show()
             stopTimeTask(false)
         }
@@ -59,7 +59,7 @@ class BreakActivity : AppCompatActivity(), View.OnClickListener {
             //0초가 되면 실행
             if(inTime == 0) {
                 runOnUiThread {
-                    this?.cancel()
+                    this.cancel()
                 }
                 stopTimeTask(true)
             }

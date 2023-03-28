@@ -21,7 +21,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=":"
+            android:text="@string/str_division"
             android:textSize="15sp" />
 
         <NumberPicker
@@ -42,14 +42,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="세트 수"
+            android:text="@string/str_set"
             android:textSize="15sp" />
 
         <TextView
             android:id="@+id/text_timer_set"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0"
+            android:text="@string/str_set_initial"
             android:textSize="15sp" />
 
         <LinearLayout
@@ -59,14 +59,18 @@
             android:gravity="center" >
 
             <Button
-                android:id="@+id/btn_timer_break_plus"
-                android:layout_width="30dp"
-                android:layout_height="30dp" />
+                android:id="@+id/btn_timer_set_plus"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/img_up"
+                tools:ignore="SpeakableTextPresentCheck" />
 
             <Button
-                android:id="@+id/btn_timer_break_minus"
-                android:layout_width="30dp"
-                android:layout_height="30dp" />
+                android:id="@+id/btn_timer_set_minus"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/img_down"
+                tools:ignore="SpeakableTextPresentCheck" />
 
         </LinearLayout>
 
@@ -78,7 +82,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/btn_timer_start"
-        android:text="기록"
+        android:text="@string/str_record"
         android:textSize="15sp" />
 
     <Button
@@ -87,7 +91,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="시작"
+        android:text="@string/str_start"
         android:textSize="15sp" />
 
 </RelativeLayout>

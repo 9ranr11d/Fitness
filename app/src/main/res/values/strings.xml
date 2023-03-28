@@ -1,5 +1,25 @@
 <resources>
     <string name="app_name">Fitness</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Custom str -->
+
+    <!-- Title -->
+    <string name="str_set">세트 :</string>
+    <string name="str_date">날짜 :</string>
+    <string name="str_part">부위 :</string>
+    <string name="str_name">이름 :</string>
+    <string name="str_rep_and_wt">횟수 &amp; 무게</string>
+
+    <!-- Btn -->
+    <string name="btn_break_stop">정지</string>
+    <string name="str_record">기록</string>
+    <string name="str_start">시작</string>
+
+    <!-- Hint -->
+    <string name="hint_name">운동 이름</string>
+
+    <!-- rest -->
+    <string name="str_division">:</string>
+    <string name="str_set_initial">0</string>
+
 </resources>

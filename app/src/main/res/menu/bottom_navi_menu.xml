@@ -3,14 +3,17 @@
 
     <item
         android:id="@+id/item_b_navi_timer"
+        android:icon="@drawable/img_timer"
         android:title="타이머" />
 
     <item
         android:id="@+id/item_b_navi_search"
+        android:icon="@drawable/img_search"
         android:title="검색" />
 
     <item
         android:id="@+id/item_b_navi_calendar"
+        android:icon="@drawable/img_calendar"
         android:title="달력" />
 
 </menu>

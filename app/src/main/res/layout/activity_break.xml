@@ -17,14 +17,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="세트 수 :"
+            android:text="@string/str_set"
             android:textSize="15sp" />
 
         <TextView
             android:id="@+id/text_break_set"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0"
             android:textSize="15sp" />
 
     </LinearLayout>
@@ -34,7 +33,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="0"
         android:textSize="15sp" />
 
     <ProgressBar
@@ -52,8 +50,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:text="정지"
+        android:layout_alignParentEnd="true"
+        android:text="@string/btn_break_stop"
         android:textSize="15sp" />
 
 </RelativeLayout>

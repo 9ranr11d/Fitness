@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -17,58 +18,61 @@
         <TextView
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:text="날짜 :"
+            android:text="@string/str_date"
             android:textSize="15sp" />
 
         <TextView
             android:id="@+id/text_record_date"
             android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:text="date"
-            android:textSize="15sp" />
+            android:layout_height="48dp"
+            android:textSize="15sp"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <!-- 부위 -->
 
         <TextView
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:text="부위 :"
+            android:text="@string/str_part"
             android:textSize="15sp" />
 
         <Spinner
             android:id="@+id/spinner_record_part"
             android:layout_width="150dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="48dp"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <!-- 이름 -->
 
         <TextView
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:text="이름 :"
+            android:text="@string/str_name"
             android:textSize="15sp" />
 
         <EditText
             android:id="@+id/edit_record_name"
             android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:hint="name"
-            android:textSize="15sp" />
+            android:layout_height="48dp"
+            android:hint="@string/hint_name"
+            android:textSize="15sp"
+            android:inputType="text"
+            android:autofillHints="no" />
 
         <!-- 세트 -->
 
         <TextView
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:text="세트"
+            android:text="@string/str_set"
             android:textSize="15sp" />
 
         <TextView
             android:id="@+id/text_record_set"
             android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:text="set"
-            android:textSize="15sp" />
+            android:layout_height="48dp"
+            android:textSize="15sp"
+            tools:ignore="SpeakableTextPresentCheck" />
 
     </GridLayout>
 
@@ -83,12 +87,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="횟수 &amp; 무게"
+            android:text="@string/str_rep_and_wt"
             android:textSize="15sp" />
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="100dp" >
+            android:layout_height="100dp"
+            tools:ignore="SpeakableTextPresentCheck" >
 
             <GridLayout
                 android:id="@+id/grid_lay_record_rep_and_wt"

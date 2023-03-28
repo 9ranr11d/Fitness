@@ -11,7 +11,9 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true" />
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/img_setting"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <FrameLayout
         android:id="@+id/frame_lay_main_fragment"
@@ -26,6 +28,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         app:menu="@menu/bottom_navi_menu"
-        app:labelVisibilityMode="labeled" />
+        app:labelVisibilityMode="unlabeled" />
 
 </RelativeLayout>
