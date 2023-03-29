@@ -23,7 +23,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
-import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.collections.ArrayList
 
 class TimerFragment : Fragment(), View.OnClickListener {
@@ -50,7 +51,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
 
         getSharedPreferences()
 
-        setNumPicker()
+        initNumPicker()
         setBtnListener()
         getLauncherResult()
 
@@ -119,7 +120,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
     }
 
     //NumberPicker setting
-    private fun setNumPicker() {
+    private fun initNumPicker() {
         //쉬는 시간의 분 numberPicker 최대, 최소 값 지정
         binding.nPickerTimerMin.minValue = 0
         binding.nPickerTimerMin.maxValue = 10
@@ -194,7 +195,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
             val value = "${dialogBinding.gridLayRecordRepAndWt.findViewById<EditText>(editIdMap["$keyword$i"]!!).text}"
 
             //적힌 값이 없으면 0을 추가
-            if(value != "")
+            if(value.isNotEmpty())
                 result.append(value)
             else
                 result.append("0")
@@ -207,7 +208,9 @@ class TimerFragment : Fragment(), View.OnClickListener {
 
     //기록 팝업 Setting
     private fun serRecordView() {
-        dialogBinding.textRecordDate.text = LocalDate.now().toString()
+        val nowDate = LocalDateTime.now()
+        val dateFormat = DateTimeFormatter.ofPattern("yy-MM-dd_HH:mm")
+        dialogBinding.textRecordDate.text = nowDate.format(dateFormat)
         dialogBinding.textRecordSet.text = set.toString()
         dialogBinding.spinnerRecordPart.adapter = utils.setSpinnerAdapter(requireContext(), partsList)
 

@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class TrainingRecord(
-    @PrimaryKey(autoGenerate = true) val seq: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo val date: String,
     @ColumnInfo val part: String,
     @ColumnInfo val name: String,
@@ -27,7 +27,7 @@ data class TrainingRecord(
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(seq)
+        parcel.writeInt(id)
         parcel.writeString(date)
         parcel.writeString(part)
         parcel.writeString(name)

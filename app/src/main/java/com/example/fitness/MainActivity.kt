@@ -2,6 +2,8 @@ package com.example.fitness
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
 import com.example.fitness.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -12,22 +14,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setBottomNavi()
+        initNaviGraph()
     }
 
-    //Bottom navigation
-    private fun setBottomNavi() {
-        supportFragmentManager.beginTransaction().add(R.id.frame_lay_main_fragment, TimerFragment()).commit()
-        binding.bNaviMain.setOnItemSelectedListener {
-            when (it.itemId) {
-                R.id.item_b_navi_timer -> supportFragmentManager.beginTransaction()
-                    .replace(R.id.frame_lay_main_fragment, TimerFragment()).commit()
-                R.id.item_b_navi_search -> supportFragmentManager.beginTransaction()
-                    .replace(R.id.frame_lay_main_fragment, SearchFragment()).commit()
-                R.id.item_b_navi_calendar -> supportFragmentManager.beginTransaction()
-                    .replace(R.id.frame_lay_main_fragment, CalendarFragment()).commit()
-            }
-            true
-        }
+    //Bottom Navigation
+    private fun initNaviGraph() {
+        NavigationUI.setupWithNavController(binding.bNaviMain, findNavController(R.id.frag_main))
     }
 }

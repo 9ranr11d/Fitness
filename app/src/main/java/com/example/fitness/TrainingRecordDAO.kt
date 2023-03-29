@@ -14,6 +14,6 @@ interface TrainingRecordDAO {
     @Delete
     fun deleteRecord(trainingRecord: TrainingRecord)
 
-    @Query("SELECT * from TrainingRecord")
-    fun selectAll(): Flow<List<TrainingRecord>>
+    @Query("SELECT * from TrainingRecord ORDER BY date ASC")
+    fun getAll(): Flow<List<TrainingRecord>>
 }
