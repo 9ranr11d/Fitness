@@ -26,8 +26,6 @@ class RecordListAdapter(private val onItemClicked: (TrainingRecord) -> Unit): Li
 
     //한 줄에 쓸 View 가져오기
     class ViewHolder(private val binding: ItemRecyclerViewRecordBinding): RecyclerView.ViewHolder(binding.root) {
-
-
         @SuppressLint("SimpleDateFormat")
         fun bind(trainingRecord: TrainingRecord) {
             val dateTime = trainingRecord.date.split("_")
@@ -61,6 +59,4 @@ class RecordListAdapter(private val onItemClicked: (TrainingRecord) -> Unit): Li
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
-
-
 }

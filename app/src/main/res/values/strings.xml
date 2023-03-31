@@ -18,8 +18,15 @@
     <!-- Hint -->
     <string name="hint_name">운동 이름</string>
 
-    <!-- rest -->
+    <!-- Rest -->
     <string name="str_division">:</string>
     <string name="str_set_initial">0</string>
+    <string name="str_search_hint">검색어를 입력하시오</string>
+
+    <!-- String array -->
+    <string-array name="search_division">
+        <item>이름</item>
+        <item>부위</item>
+    </string-array>
 
 </resources>

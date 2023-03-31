@@ -28,11 +28,15 @@ import java.time.format.DateTimeFormatter
 import kotlin.collections.ArrayList
 
 class TimerFragment : Fragment(), View.OnClickListener {
-    private val tag = javaClass.simpleName
-    private lateinit var binding: FragmentTimerBinding              //FragmentTimer ViewBinding
-    private lateinit var dialogBinding: DialogRecordBinding         //DialogRecord ViewBinding
+    private val TAG = javaClass.simpleName
+
+    private var _binding: FragmentTimerBinding? = null              //FragmentTimer ViewBinding
+    private val binding get() = _binding!!
+
+    private var _dialogBinding: DialogRecordBinding? = null         //DialogRecord ViewBinding
+    private val dialogBinding get() = _dialogBinding!!
+
     private lateinit var launcher: ActivityResultLauncher<Intent>
-    private val utils = Utils()
     private val utilFileName = "utilVar"
 
     private var set = 0                                 //세트
@@ -44,9 +48,13 @@ class TimerFragment : Fragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View {
         //ViewBinding
-        binding = FragmentTimerBinding.inflate(layoutInflater)          //fragment_timer
-        dialogBinding = DialogRecordBinding.inflate(layoutInflater)     //dialog_record
+        _binding = FragmentTimerBinding.inflate(inflater, container, false)          //fragment_timer
+        _dialogBinding = DialogRecordBinding.inflate(inflater, container, false)     //dialog_record
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setFirst()
 
         getSharedPreferences()
@@ -54,8 +62,6 @@ class TimerFragment : Fragment(), View.OnClickListener {
         initNumPicker()
         setBtnListener()
         getLauncherResult()
-
-        return binding.root
     }
 
     //SharedPreferences 저장된 변수 가져오기
@@ -83,7 +89,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
 
         //맨 처음 시작할 때만 실행
         if(isFirst) {
-            Log.d(tag, "First visit")
+            Log.d(TAG, "First visit")
 
             val firstPartsList = ArrayList<String>(listOf("가슴", "등", "하체", "어깨", "삼두", "이두", "복근"))
             val jsonAry = JSONArray()
@@ -95,7 +101,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
             editor.putString("Parts_list", jsonAry.toString())
             editor.apply()
         }else
-            Log.d(tag, "Not the first visit")
+            Log.d(TAG, "Not the first visit")
     }
 
     //Launcher Result 값 받아옴
@@ -208,8 +214,11 @@ class TimerFragment : Fragment(), View.OnClickListener {
 
     //기록 팝업 Setting
     private fun serRecordView() {
+        val utils = Utils()
+
         val nowDate = LocalDateTime.now()
         val dateFormat = DateTimeFormatter.ofPattern("yy-MM-dd_HH:mm")
+
         dialogBinding.textRecordDate.text = nowDate.format(dateFormat)
         dialogBinding.textRecordSet.text = set.toString()
         dialogBinding.spinnerRecordPart.adapter = utils.setSpinnerAdapter(requireContext(), partsList)
@@ -255,5 +264,12 @@ class TimerFragment : Fragment(), View.OnClickListener {
         CoroutineScope(Dispatchers.IO).launch {
             trainingRecordDAO.insertRecord(target)
         }
+    }
+
+    //Fragment ViewBinding 삭제
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+        _dialogBinding = null
     }
 }

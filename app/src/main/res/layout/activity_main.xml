@@ -23,7 +23,8 @@
         app:navGraph="@navigation/graph_b_navi"
         app:defaultNavHost="true"
         android:layout_below="@+id/btn_main_setting"
-        android:layout_above="@+id/b_navi_main" />
+        android:layout_above="@+id/b_navi_main"
+        tools:ignore="FragmentTagUsage" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/b_navi_main"
