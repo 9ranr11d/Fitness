@@ -36,7 +36,7 @@
         android:textSize="15sp" />
 
     <ProgressBar
-        android:id="@+id/progress_bar_break_ring"
+        android:id="@+id/progress_break_ring"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:text="@string/btn_break_stop"
+        android:text="@string/str_stop"
         android:textSize="15sp" />
 
 </RelativeLayout>

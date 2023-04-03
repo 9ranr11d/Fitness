@@ -1,12 +1,15 @@
 package com.example.fitness
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,13 +18,20 @@ import com.example.fitness.databinding.FragmentSearchBinding
 import kotlinx.coroutines.launch
 
 class SearchFragment : Fragment() {
-    private val TAG = javaClass.simpleName
-
+//    private val TAG = javaClass.simpleName
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
+    private val utils = Utils()
 
+    private lateinit var launcher: ActivityResultLauncher<Intent>
     private lateinit var recordRecycler: RecyclerView
     private lateinit var recordListAdapter: RecordListAdapter
+
+    private val recordListViewModel: RecordListViewModel by activityViewModels {
+        RecordListViewModelFactory(
+            (activity?.application as RecordListApplication).dataBase.TrainingRecordDAO()
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +48,18 @@ class SearchFragment : Fragment() {
         setRecord()
         initSpinner()
         initSearch()
+
+        getLauncherResult()
+    }
+
+    private fun getLauncherResult() {
+        launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            when(it.resultCode) {
+                Utils.RESULT_UPDATE -> utils.makeToast(requireContext(), "기록 갱신에 성공했습니다.")
+                Utils.RESULT_DELETE -> utils.makeToast(requireContext(), "기록 삭제에 성공했습니다.")
+                Activity.RESULT_CANCELED -> utils.makeToast(requireContext(), "취소되었습니다.")
+            }
+        }
     }
 
     //SearchView
@@ -59,13 +81,11 @@ class SearchFragment : Fragment() {
 
                 return true
             }
-
         })
     }
 
     //Spinner
     private fun initSpinner() {
-        val utils = Utils()
         binding.spinnerSearchDivision.adapter = utils.setSpinnerAdapter(requireContext(), resources.getStringArray(R.array.search_division).toCollection(ArrayList()))
     }
 
@@ -76,7 +96,10 @@ class SearchFragment : Fragment() {
 
         //RecyclerView 목록 클릭 시
         recordListAdapter = RecordListAdapter {
-            Log.i(TAG, "id : ${it.id},part : ${it.part}, name : ${it.name}, set : ${it.set}")
+            val goOneRecord = Intent(context, OneRecordActivity::class.java)
+            goOneRecord.putExtra("Target", it)
+
+            launcher.launch(goOneRecord)
         }
 
         recordRecycler.adapter = recordListAdapter
@@ -110,13 +133,6 @@ class SearchFragment : Fragment() {
                 recordListAdapter.submitList(searchRecords)
             }
         }
-    }
-
-    //ViewModel
-    private val recordListViewModel: RecordListViewModel by activityViewModels {
-        RecordListViewModelFactory(
-            (activity?.application as RecordListApplication).dataBase.TrainingRecordDAO()
-        )
     }
 
     //Fragment ViewBinding 삭제

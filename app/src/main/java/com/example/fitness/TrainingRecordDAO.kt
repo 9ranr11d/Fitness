@@ -1,15 +1,15 @@
 package com.example.fitness
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TrainingRecordDAO {
     @Insert
     fun insertRecord(trainingRecord: TrainingRecord)
+
+    @Update
+    fun updateRecord(trainingRecord: TrainingRecord)
 
     @Delete
     fun deleteRecord(trainingRecord: TrainingRecord)

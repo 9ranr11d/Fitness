@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OneRecordActivity">
+
+    <LinearLayout
+        android:id="@+id/linear_o_record_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" >
+
+        <Button
+            android:id="@+id/btn_o_record_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            style="?android:attr/buttonBarButtonStyle"
+            android:text="@string/str_update"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btn_o_record_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/buttonBarButtonStyle"
+            android:text="@string/str_delete"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btn_o_record_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            style="?android:attr/buttonBarButtonStyle"
+            android:text="@string/str_cancel"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <GridLayout
+        android:id="@+id/grid_o_record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linear_o_record_btn"
+        android:layout_alignParentStart="true"
+        android:columnCount="4"
+        android:orientation="horizontal" >
+
+        <!-- 날짜 -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/str_date"
+            android:textSize="15sp" />
+
+        <NumberPicker
+            android:id="@+id/n_picker_o_record_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <NumberPicker
+            android:id="@+id/n_picker_o_record_month"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <NumberPicker
+            android:id="@+id/n_picker_o_record_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <!-- 부위 -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/str_part"
+            android:textSize="15sp" />
+
+        <Spinner
+            android:id="@+id/spinner_o_record_part"
+            android:layout_width="150dp"
+            android:layout_height="48sp"
+            android:layout_columnSpan="3"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <!-- 이름 -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/str_name"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/edit_o_record_name"
+            android:layout_width="wrap_content"
+            android:layout_height="48sp"
+            android:layout_columnSpan="3"
+            android:hint="@string/hint_name"
+            android:textSize="15sp"
+            android:inputType="text"
+            android:importantForAutofill="no" />
+
+        <!-- 세트 -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/str_set"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/edit_o_record_set"
+            android:layout_width="wrap_content"
+            android:layout_height="48sp"
+            android:layout_columnSpan="2"
+            android:hint="@string/hint_set"
+            android:inputType="number"
+            android:textSize="15sp"
+            android:importantForAutofill="no" />
+
+        <Button
+            android:id="@+id/btn_o_record_check"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/img_check"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <!-- 횟수 & 무게 -->
+
+        <TextView
+            android:id="@+id/text_o_record_rep_and_wt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnSpan="2"
+            android:text="@string/str_rep_and_wt"
+            android:textSize="15sp" />
+
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:layout_columnSpan="2"
+            tools:ignore="SpeakableTextPresentCheck" >
+
+            <GridLayout
+                android:id="@+id/grid_o_record_rep_and_wt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:columnCount="6" >
+
+
+
+            </GridLayout>
+
+        </ScrollView>
+
+    </GridLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_o_record_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linear_o_record_btn"
+        android:layout_toEndOf="@+id/grid_o_record"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/str_time"
+            android:textSize="15sp" />
+
+        <NumberPicker
+            android:id="@+id/n_picker_o_record_hour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/str_division"
+            android:textSize="15sp" />
+
+        <NumberPicker
+            android:id="@+id/n_picker_o_record_minute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</RelativeLayout>

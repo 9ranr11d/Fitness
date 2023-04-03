@@ -10,7 +10,6 @@ import com.example.fitness.databinding.ItemRecyclerViewRecordBinding
 import java.util.*
 
 class RecordListAdapter(private val onItemClicked: (TrainingRecord) -> Unit): ListAdapter<TrainingRecord, RecordListAdapter.ViewHolder>(DiffCallback) {
-
     companion object {
         private val utils = Utils()
         private val DiffCallback = object: DiffUtil.ItemCallback<TrainingRecord>() {
@@ -28,7 +27,7 @@ class RecordListAdapter(private val onItemClicked: (TrainingRecord) -> Unit): Li
     class ViewHolder(private val binding: ItemRecyclerViewRecordBinding): RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SimpleDateFormat")
         fun bind(trainingRecord: TrainingRecord) {
-            val dateTime = trainingRecord.date.split("_")
+            val dateTime = trainingRecord.date.split(" ")
             binding.textRecyclerDate.text = "${dateTime[0]}\n${dateTime[1]}"
             binding.textRecyclerPart.text = trainingRecord.part
             binding.textRecyclerName.text = trainingRecord.name

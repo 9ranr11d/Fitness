@@ -7,7 +7,7 @@
     tools:context=".SearchFragment">
 
     <LinearLayout
-        android:id="@+id/linear_lay_search_search"
+        android:id="@+id/linear_search_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:iconifiedByDefault="false"
-            android:queryHint="@string/str_search_hint"
+            android:queryHint="@string/hint_search"
             android:closeIcon="@drawable/img_close" />
 
     </LinearLayout>
@@ -34,7 +34,7 @@
         android:id="@+id/recycler_search_record"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/linear_lay_search_search"
+        android:layout_below="@+id/linear_search_search"
         android:layout_centerHorizontal="true"
         android:orientation="vertical"
         tools:listitem="@layout/item_recycler_view_record" />

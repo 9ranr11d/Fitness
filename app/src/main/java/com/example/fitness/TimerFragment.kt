@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.text.InputType
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,10 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.room.Room
+import androidx.fragment.app.activityViewModels
 import com.example.fitness.databinding.DialogRecordBinding
 import com.example.fitness.databinding.FragmentTimerBinding
 import kotlinx.coroutines.CoroutineScope
@@ -29,19 +27,24 @@ import kotlin.collections.ArrayList
 
 class TimerFragment : Fragment(), View.OnClickListener {
     private val TAG = javaClass.simpleName
-
     private var _binding: FragmentTimerBinding? = null              //FragmentTimer ViewBinding
     private val binding get() = _binding!!
-
     private var _dialogBinding: DialogRecordBinding? = null         //DialogRecord ViewBinding
     private val dialogBinding get() = _dialogBinding!!
+    private val utils = Utils()
 
     private lateinit var launcher: ActivityResultLauncher<Intent>
-    private val utilFileName = "utilVar"
-
     private var set = 0                                 //세트
+    private var min = 0                                 //분
+    private var sec = 0                                 //초
     private var partsList = ArrayList<String>()         //운동 부위 List
     private var editIdMap = HashMap<String, Int>()      //동적 뷰 ID Map
+
+    private val recordListViewModel: RecordListViewModel by activityViewModels {
+        RecordListViewModelFactory(
+            (activity?.application as RecordListApplication).dataBase.TrainingRecordDAO()
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,31 +62,20 @@ class TimerFragment : Fragment(), View.OnClickListener {
 
         getSharedPreferences()
 
-        initNumPicker()
+        initSetting()
         setBtnListener()
+
         getLauncherResult()
     }
 
-    //SharedPreferences 저장된 변수 가져오기
-    private fun getSharedPreferences() {
-        val sharedPreferences = this.requireActivity().getSharedPreferences(utilFileName, Activity.MODE_PRIVATE)
-        val tempPartsList = sharedPreferences.getString("Parts_list", null)
-        if(tempPartsList != null) {
-            try {
-                val jsonAry = JSONArray(tempPartsList)
-
-                for(i: Int in 0 until jsonAry.length())
-                    partsList.add(jsonAry.optString(i))
-
-            }catch(jsonE: JSONException) {
-                jsonE.stackTrace
-            }
-        }
+    private fun initSetting() {
+        binding.textTimerSet.text = "$set"
+        initNumPicker()
     }
 
     //맨 처음 딱 한번 실행
     private fun setFirst() {
-        val sharedPreferences = this.requireActivity().getSharedPreferences(utilFileName, Activity.MODE_PRIVATE)
+        val sharedPreferences = this.requireActivity().getSharedPreferences(MainActivity.utilFileName, Activity.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         val isFirst = sharedPreferences.getBoolean("Is_first", true)
 
@@ -104,25 +96,22 @@ class TimerFragment : Fragment(), View.OnClickListener {
             Log.d(TAG, "Not the first visit")
     }
 
-    //Launcher Result 값 받아옴
-    private fun getLauncherResult() {
-        launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            when(it.resultCode) {
-                Activity.RESULT_OK -> {
-                    val receive = it.data
-                    if(receive?.getBooleanExtra("isFinish", false)!!)
-                        binding.textTimerSet.text = "${++set}"
-                }
+    //SharedPreferences 저장된 변수 가져오기
+    private fun getSharedPreferences() {
+        val sharedPreferences = this.requireActivity().getSharedPreferences(MainActivity.utilFileName, Activity.MODE_PRIVATE)
+        val tempPartsList = sharedPreferences.getString("Parts_list", null)
+
+        if(partsList.isEmpty()) {
+            try {
+                val jsonAry = JSONArray(tempPartsList)
+
+                for(i: Int in 0 until jsonAry.length())
+                    partsList.add(jsonAry.optString(i))
+
+            }catch(jsonE: JSONException) {
+                jsonE.stackTrace
             }
         }
-    }
-
-    //Button Listener
-    private fun setBtnListener() {
-        binding.btnTimerSetPlus.setOnClickListener(this)
-        binding.btnTimerSetMinus.setOnClickListener(this)
-        binding.btnTimerRecord.setOnClickListener(this)
-        binding.btnTimerStart.setOnClickListener(this)
     }
 
     //NumberPicker setting
@@ -134,6 +123,69 @@ class TimerFragment : Fragment(), View.OnClickListener {
         //쉬는 시간의 초 numberPicker 최대, 최소 값 지정
         binding.nPickerTimerSec.minValue = 0
         binding.nPickerTimerSec.maxValue = 59
+
+        binding.nPickerTimerMin.value = min
+        binding.nPickerTimerSec.value = sec
+    }
+
+    //Button Listener
+    private fun setBtnListener() {
+        binding.btnTimerSetPlus.setOnClickListener(this)
+        binding.btnTimerSetMinus.setOnClickListener(this)
+        binding.btnTimerRecord.setOnClickListener(this)
+        binding.btnTimerStart.setOnClickListener(this)
+    }
+
+    //Launcher Result 값 받아옴
+    private fun getLauncherResult() {
+        launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            when(it.resultCode) {
+                Activity.RESULT_OK -> binding.textTimerSet.text = "${++set}"
+                Activity.RESULT_CANCELED -> utils.makeToast(requireContext(), "정지되었습니다.")
+            }
+        }
+    }
+
+    //기록 팝업 Setting
+    private fun serRecordView() {
+        val nowDate = LocalDateTime.now()
+        val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+
+        dialogBinding.textRecordDate.text = nowDate.format(dateFormat)
+        dialogBinding.textRecordSet.text = set.toString()
+        dialogBinding.spinnerRecordPart.adapter = utils.setSpinnerAdapter(requireContext(), partsList)
+
+        dialogBinding.gridRecordRepAndWt.removeAllViews()
+
+        for(i: Int in 1 .. set) {
+            val repET = EditText(context)       //횟수 EditText
+            val repID = View.generateViewId()   //ID
+            repET.id = repID
+            utils.setEdit(repET,"횟수")
+
+            val setTV = TextView(context)
+            setTV.text = "$i"
+            setTV.textSize = 15F
+
+            val wtET = EditText(context)        //무게 EditText
+            val wtID = View.generateViewId()    //ID
+            wtET.id = wtID
+            utils.setEdit(wtET, "무게")
+
+            editIdMap["rep$i"] = repID
+            editIdMap["wt$i"] = wtID
+
+            dialogBinding.gridRecordRepAndWt.addView(repET)
+            dialogBinding.gridRecordRepAndWt.addView(setTV)
+            dialogBinding.gridRecordRepAndWt.addView(wtET)
+        }
+    }
+
+    //DB에 데이터 추가
+    private fun insertRecord(record: TrainingRecord) {
+        CoroutineScope(Dispatchers.IO).launch {
+            recordListViewModel.insertRecord(record)
+        }
     }
 
     override fun onClick(v: View?) {
@@ -159,11 +211,13 @@ class TimerFragment : Fragment(), View.OnClickListener {
                                 dialogBinding.spinnerRecordPart.selectedItem.toString(),
                                 dialogBinding.editRecordName.text.toString(),
                                 dialogBinding.textRecordSet.text.toString().toInt(),
-                                getEditText("rep"),
-                                getEditText("wt")
+                                utils.getEditText(dialogBinding.gridRecordRepAndWt, editIdMap, set, "rep"),
+                                utils.getEditText(dialogBinding.gridRecordRepAndWt, editIdMap, set, "wt")
                             )
-                            insertDB(recordToAdd)
+                            insertRecord(recordToAdd)
                             editIdMap.clear()           //기록 완료 후 잔여 데이터 삭제
+                            set = 0
+                            utils.makeToast(requireContext(), "기록에 성공하였습니다.")
 
                             //recordView 중복 문제 해결
                             if (recordView.parent != null)
@@ -174,12 +228,12 @@ class TimerFragment : Fragment(), View.OnClickListener {
                                 (recordView.parent as ViewGroup).removeView(recordView)
 
                             dialog.dismiss()
-                            Toast.makeText(requireContext(), "취소되었습니다.", Toast.LENGTH_SHORT).show()
+                            utils.makeToast(requireContext(), "취소되었습니다.")
                         }
 
                     recordDialog.show()
                 }else
-                    Toast.makeText(requireContext(), "세트 수가 없습니다.", Toast.LENGTH_SHORT).show()
+                    utils.makeToast(requireContext(), "세트 수가 없습니다.")
             }
             R.id.btn_timer_start -> {                                                       //타이머 시작
                 val goBreak = Intent(requireContext(), BreakActivity::class.java)
@@ -190,79 +244,6 @@ class TimerFragment : Fragment(), View.OnClickListener {
 
                 launcher.launch(goBreak)
             }
-        }
-    }
-
-    //동적으로 생성한 EditText 값 추출
-    private fun getEditText(keyword: String): String {
-        val result = StringBuilder()
-
-        for (i: Int in 1..set) {
-            val value = "${dialogBinding.gridLayRecordRepAndWt.findViewById<EditText>(editIdMap["$keyword$i"]!!).text}"
-
-            //적힌 값이 없으면 0을 추가
-            if(value.isNotEmpty())
-                result.append(value)
-            else
-                result.append("0")
-
-            result.append("_")
-        }
-
-        return result.toString()
-    }
-
-    //기록 팝업 Setting
-    private fun serRecordView() {
-        val utils = Utils()
-
-        val nowDate = LocalDateTime.now()
-        val dateFormat = DateTimeFormatter.ofPattern("yy-MM-dd_HH:mm")
-
-        dialogBinding.textRecordDate.text = nowDate.format(dateFormat)
-        dialogBinding.textRecordSet.text = set.toString()
-        dialogBinding.spinnerRecordPart.adapter = utils.setSpinnerAdapter(requireContext(), partsList)
-
-        dialogBinding.gridLayRecordRepAndWt.removeAllViews()
-
-        for(i: Int in 1 .. set) {
-            val repET = EditText(context)       //횟수 EditText
-            val repID = View.generateViewId()   //ID
-            repET.id = repID
-            setEdit(repET,"횟수")
-
-            val setTV = TextView(context)
-            setTV.text = "$i"
-            setTV.textSize = 15F
-
-            val wtET = EditText(context)        //무게 EditText
-            val wtID = View.generateViewId()    //ID
-            wtET.id = wtID
-            setEdit(wtET, "무게")
-
-            editIdMap["rep$i"] = repID
-            editIdMap["wt$i"] = wtID
-
-            dialogBinding.gridLayRecordRepAndWt.addView(repET)
-            dialogBinding.gridLayRecordRepAndWt.addView(setTV)
-            dialogBinding.gridLayRecordRepAndWt.addView(wtET)
-        }
-    }
-
-    //횟수, 무게 EditText Setting
-    private fun setEdit(edit: EditText, hint: String) {
-        edit.hint = hint
-        edit.textSize = 15F
-        edit.inputType = InputType.TYPE_CLASS_NUMBER
-    }
-
-    //DB에 데이터 추가
-    private fun insertDB(target: TrainingRecord) {
-        val db = Room.databaseBuilder(requireContext(), DataBase::class.java, "TrainingRecord").build()
-        val trainingRecordDAO = db.TrainingRecordDAO()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            trainingRecordDAO.insertRecord(target)
         }
     }
 

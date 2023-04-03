@@ -6,22 +6,28 @@
     <!-- Title -->
     <string name="str_set">세트 :</string>
     <string name="str_date">날짜 :</string>
+    <string name="str_time">시간 :</string>
     <string name="str_part">부위 :</string>
     <string name="str_name">이름 :</string>
     <string name="str_rep_and_wt">횟수 &amp; 무게</string>
 
     <!-- Btn -->
-    <string name="btn_break_stop">정지</string>
+    <string name="str_stop">정지</string>
     <string name="str_record">기록</string>
     <string name="str_start">시작</string>
+    <string name="str_update">수정</string>
+    <string name="str_delete">삭제</string>
+    <string name="str_cancel">취소</string>
 
     <!-- Hint -->
     <string name="hint_name">운동 이름</string>
+    <string name="hint_part">운동 부위</string>
+    <string name="hint_set">세트 수</string>
+    <string name="hint_search">검색어를 입력하시오</string>
 
     <!-- Rest -->
     <string name="str_division">:</string>
     <string name="str_set_initial">0</string>
-    <string name="str_search_hint">검색어를 입력하시오</string>
 
     <!-- String array -->
     <string-array name="search_division">
