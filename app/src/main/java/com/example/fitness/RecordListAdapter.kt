@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fitness.databinding.ItemRecyclerViewRecordBinding
-import java.util.*
 
 class RecordListAdapter(private val onItemClicked: (TrainingRecord) -> Unit): ListAdapter<TrainingRecord, RecordListAdapter.ViewHolder>(DiffCallback) {
     companion object {
@@ -25,10 +24,9 @@ class RecordListAdapter(private val onItemClicked: (TrainingRecord) -> Unit): Li
 
     //한 줄에 쓸 View 가져오기
     class ViewHolder(private val binding: ItemRecyclerViewRecordBinding): RecyclerView.ViewHolder(binding.root) {
-        @SuppressLint("SimpleDateFormat")
+        @SuppressLint("SetTextI18n")
         fun bind(trainingRecord: TrainingRecord) {
-            val dateTime = trainingRecord.date.split(" ")
-            binding.textRecyclerDate.text = "${dateTime[0]}\n${dateTime[1]}"
+            binding.textRecyclerDate.text = "${trainingRecord.date}\n${trainingRecord.time}"
             binding.textRecyclerPart.text = trainingRecord.part
             binding.textRecyclerName.text = trainingRecord.name
             binding.textRecyclerSet.text = "${trainingRecord.set}"

@@ -60,7 +60,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         setFirst()
 
-        getSharedPreferences()
+        getPartsList()
 
         initSetting()
         setBtnListener()
@@ -97,7 +97,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
     }
 
     //SharedPreferences 저장된 변수 가져오기
-    private fun getSharedPreferences() {
+    private fun getPartsList() {
         val sharedPreferences = this.requireActivity().getSharedPreferences(MainActivity.utilFileName, Activity.MODE_PRIVATE)
         val tempPartsList = sharedPreferences.getString("Parts_list", null)
 
@@ -205,9 +205,12 @@ class TimerFragment : Fragment(), View.OnClickListener {
                         .setView(recordView)
                         .setCancelable(false)
                         .setPositiveButton("추가") { _, _ ->
+                            val dateTime = dialogBinding.textRecordDate.text.toString().split(" ")
+
                             val recordToAdd = TrainingRecord(
                                 0,
-                                dialogBinding.textRecordDate.text.toString(),
+                                dateTime[0],
+                                dateTime[1],
                                 dialogBinding.spinnerRecordPart.selectedItem.toString(),
                                 dialogBinding.editRecordName.text.toString(),
                                 dialogBinding.textRecordSet.text.toString().toInt(),
@@ -217,6 +220,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
                             insertRecord(recordToAdd)
                             editIdMap.clear()           //기록 완료 후 잔여 데이터 삭제
                             set = 0
+                            binding.textTimerSet.text = set.toString()
                             utils.makeToast(requireContext(), "기록에 성공하였습니다.")
 
                             //recordView 중복 문제 해결
@@ -248,8 +252,8 @@ class TimerFragment : Fragment(), View.OnClickListener {
     }
 
     //Fragment ViewBinding 삭제
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
         _dialogBinding = null
     }

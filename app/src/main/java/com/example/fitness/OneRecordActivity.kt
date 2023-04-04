@@ -1,9 +1,9 @@
 package com.example.fitness
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -16,7 +16,7 @@ import org.json.JSONArray
 import org.json.JSONException
 
 class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
-    private val TAG = javaClass.simpleName
+//    private val TAG = javaClass.simpleName
     private lateinit var binding: ActivityOneRecordBinding
     private val utils = Utils()
 
@@ -50,20 +50,17 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun getTarget() {
+        @Suppress("DEPRECATION")
         target =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                 intent.getParcelableExtra("Target", TrainingRecord::class.java)!!
             else
                 intent.getParcelableExtra("Target")!!
-
-        Log.i(TAG, "Target : $target")
     }
 
     private fun initSetting() {
-        val dateTime = target.date.split(" ")
-
-        initDate(dateTime[0])
-        initTime(dateTime[1])
+        initDate(target.date)
+        initTime(target.time)
 
         initEdit()
         initSpinner(target.part)
@@ -132,6 +129,7 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
         initRepAndWt(target.set, target.rep, target.wt)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initRepAndWt(set: Int, outRep: String, outWt: String) {
         val inRep = outRep.split("_")
         val inWt = outWt.split("_")
@@ -189,12 +187,14 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
                 val updateHour = utils.intFullFormat(binding.nPickerORecordHour.value, 2)
                 val updateMinute = utils.intFullFormat(binding.nPickerORecordMinute.value, 2)
 
-                val updateDate = "${binding.nPickerORecordYear.value}-$updateMonth-$updateDay $updateHour:$updateMinute"
+                val updateDate = "${binding.nPickerORecordYear.value}-$updateMonth-$updateDay"
+                val updateTime = "$updateHour:$updateMinute"
                 val updateSet = binding.editORecordSet.text.toString().toInt()
 
                 val updateTarget = TrainingRecord(
                     target.id,
                     updateDate,
+                    updateTime,
                     binding.spinnerORecordPart.selectedItem.toString(),
                     binding.editORecordName.text.toString(),
                     updateSet,

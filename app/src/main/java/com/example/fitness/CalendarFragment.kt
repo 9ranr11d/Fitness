@@ -1,59 +1,146 @@
 package com.example.fitness
 
+import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.coroutineScope
+import com.example.fitness.databinding.FragmentCalendarBinding
+import com.prolificinteractive.materialcalendarview.CalendarDay
+import com.prolificinteractive.materialcalendarview.format.ArrayWeekDayFormatter
+import com.prolificinteractive.materialcalendarview.format.MonthArrayTitleFormatter
+import com.prolificinteractive.materialcalendarview.format.TitleFormatter
+import kotlinx.coroutines.launch
+import org.json.JSONArray
+import org.json.JSONException
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [CalendarFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class CalendarFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private val TAG = javaClass.simpleName
+    private var _binding: FragmentCalendarBinding? = null
+    private val binding get() = _binding!!
+    private val utils = Utils()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+    private var partsList = ArrayList<String>()
+
+    private val recordListViewModel: RecordListViewModel by activityViewModels {
+        RecordListViewModelFactory(
+            (activity?.application as RecordListApplication).dataBase.TrainingRecordDAO()
+        )
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_calendar, container, false)
+    ): View {
+        //ViewBinding
+        _binding = FragmentCalendarBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment CalendarFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            CalendarFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initCalendar()
+        getPartsList()
+
+        getRecordList()
+    }
+
+    //운동 부위 Spinner 쓰일 목록
+    private fun getPartsList() {
+        val sharedPreferences = this.requireActivity().getSharedPreferences(MainActivity.utilFileName, Activity.MODE_PRIVATE)
+        val tempPartsList = sharedPreferences.getString("Parts_list", null)
+
+        if(partsList.isEmpty()) {
+            try {
+                val jsonAry = JSONArray(tempPartsList)
+
+                for(i: Int in 0 until jsonAry.length())
+                    partsList.add(jsonAry.optString(i))
+
+            }catch(jsonE: JSONException) {
+                jsonE.stackTrace
             }
+        }
+    }
+
+    //CalendarView 일정 표시
+    private fun getRecordList() {
+        lifecycle.coroutineScope.launch {
+            recordListViewModel.allDate().collect {
+                val datePartMap = setOrganizeByDate(it)
+                val frequencyMap = getMaxIndex(datePartMap)
+
+                val dateSet = HashSet<CalendarDay>()
+
+                for(date in frequencyMap) {
+                    val tempDate = date.key.split("-")
+                    dateSet.add(CalendarDay.from(tempDate[0].toInt(), tempDate[1].toInt(), tempDate[2].toInt()))
+                }
+
+                binding.calendarCalendar.addDecorator(CalendarDecorator(0, dateSet))
+            }
+        }
+    }
+
+    //Key 저장된 날짜에서 가장 많이 한 운동 부위의 위치를 반환
+    private fun getMaxIndex(datePartMap: HashMap<String, ArrayList<String>>): HashMap<String, Int> {
+        val result = HashMap<String, Int>()
+
+        for(target in datePartMap) {
+            val frequencyList = ArrayList<Int>()
+
+            for(part in partsList)
+                frequencyList.add(Collections.frequency(target.value, part))
+
+            result[target.key] = frequencyList.indexOf(Collections.max(frequencyList))
+        }
+
+        return result
+    }
+
+    //날짜, 부위 쌍의 기록들을 같은 날짜끼리 묶어서 반환
+    private fun setOrganizeByDate(target: List<DatePart>): HashMap<String, ArrayList<String>> {
+        val result = HashMap<String, ArrayList<String>>()
+
+        for(one in target) {
+            var onlyPartsList = ArrayList<String>()
+
+            if(result.containsKey(one.date)) {
+                onlyPartsList = result[one.date]!!
+                onlyPartsList.add(one.part)
+            }else
+                onlyPartsList.add(one.part)
+
+            result[one.date] = onlyPartsList
+        }
+
+        return result
+    }
+
+    //CalendarView 날짜 클릭 Listener
+    private fun initCalendar() {
+        binding.calendarCalendar.setTitleFormatter(MonthArrayTitleFormatter(resources.getTextArray(R.array.calendar_months)))
+        binding.calendarCalendar.setTitleFormatter(TitleFormatter {
+            return@TitleFormatter "${it.year} ${utils.intFullFormat(it.month, 2)}"
+        })
+        binding.calendarCalendar.setWeekDayFormatter(ArrayWeekDayFormatter(resources.getTextArray(R.array.calendar_days_of_week)))
+
+        binding.calendarCalendar.setOnDateChangedListener { _, date, _ ->
+            Log.i(TAG, "${date.date}")
+        }
+    }
+
+    //Fragment ViewBinding 삭제
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

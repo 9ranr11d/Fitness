@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.flow.Flow
 
 class RecordListViewModel(private val trainingRecordDAO: TrainingRecordDAO): ViewModel() {
-    fun allRecord(): Flow<List<TrainingRecord>> = trainingRecordDAO.getAll()
+    fun allRecord(): Flow<List<TrainingRecord>> = trainingRecordDAO.getAllRecord()
+
+    fun allDate(): Flow<List<DatePart>> = trainingRecordDAO.getAllDatePart()
 
     fun insertRecord(trainingRecord: TrainingRecord) {
         trainingRecordDAO.insertRecord(trainingRecord)

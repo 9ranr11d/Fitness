@@ -10,6 +10,7 @@ import androidx.room.PrimaryKey
 data class TrainingRecord(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo val date: String,
+    @ColumnInfo val time: String,
     @ColumnInfo val part: String,
     @ColumnInfo val name: String,
     @ColumnInfo val set: Int,
@@ -21,6 +22,7 @@ data class TrainingRecord(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
+        parcel.readString()!!,
         parcel.readInt(),
         parcel.readString()!!,
         parcel.readString()!!,
@@ -29,6 +31,7 @@ data class TrainingRecord(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
         parcel.writeString(date)
+        parcel.writeString(time)
         parcel.writeString(part)
         parcel.writeString(name)
         parcel.writeInt(set)
