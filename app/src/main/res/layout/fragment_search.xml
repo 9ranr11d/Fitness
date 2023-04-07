@@ -37,6 +37,6 @@
         android:layout_below="@+id/linear_search_search"
         android:layout_centerHorizontal="true"
         android:orientation="vertical"
-        tools:listitem="@layout/item_recycler_view_record" />
+        tools:listitem="@layout/item_recycler_record" />
 
 </RelativeLayout>

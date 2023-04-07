@@ -2,15 +2,14 @@ package com.example.fitness
 
 import android.content.Context
 import android.text.InputType
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.GridLayout
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import org.json.JSONArray
+import org.json.JSONException
 import kotlin.math.pow
 
 class Utils {
-//    private val TAG = javaClass.simpleName
-
     companion object {
         const val RESULT_UPDATE = 1
         const val RESULT_DELETE = 2
@@ -49,10 +48,10 @@ class Utils {
     }
 
     //동적 EditText 값 추출 ver.1
-    fun getEditText(targetGrid: GridLayout, idMap: HashMap<String, Int>, set: Int, keyword: String): String {
+    fun getEditText(targetGrid: GridLayout, idMap: HashMap<String, Int>, size: Int, keyword: String): String {
         val result = StringBuilder()
 
-        for (i: Int in 1..set) {
+        for (i: Int in 1..size) {
             val value = "${targetGrid.findViewById<EditText>(idMap["$keyword$i"]!!).text}"
 
             //적힌 값이 없으면 0을 추가
@@ -61,7 +60,7 @@ class Utils {
             else
                 result.append("0")
 
-            if(i < set)
+            if(i < size)
                 result.append("_")
         }
 
@@ -90,7 +89,55 @@ class Utils {
         return result.toString()
     }
 
+    //Toast
     fun makeToast(context: Context, msg: String) {
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+    }
+
+    //SharedPreference 리스트 추출
+    fun getPrefList(context: Context, name: String): ArrayList<String> {
+        val result = ArrayList<String>()
+
+        val sharedPreferences = context.getSharedPreferences(MainActivity.utilFileName, AppCompatActivity.MODE_PRIVATE)
+        val tempList = sharedPreferences.getString(name, null)
+
+        try{
+            val jsonAry = JSONArray(tempList)
+
+            for(i: Int in 0 until jsonAry.length())
+                result.add(jsonAry.optString(i))
+
+        }catch(jsonE: JSONException) {
+            jsonE.stackTrace
+        }
+
+        return result
+    }
+
+    //SharedPreference 리스트 저장
+    fun setPrefList(context: Context, name: String, ary: List<String>) {
+        val sharedPreferences = context.getSharedPreferences(MainActivity.utilFileName,
+            AppCompatActivity.MODE_PRIVATE
+        )
+        val editor = sharedPreferences.edit()
+        editor.putString(name, initList(ary))
+        editor.apply()
+    }
+
+    //AlertDialog
+    fun initDialog(context: Context, title: String?): AlertDialog.Builder? {
+        return AlertDialog.Builder(context)
+            .setTitle(title)
+            .setCancelable(false)
+    }
+
+    //List to jsonAry
+    fun initList(list: List<String>): String {
+        val jsonAry = JSONArray()
+
+        for(one in list)
+            jsonAry.put(one)
+
+        return jsonAry.toString()
     }
 }

@@ -1,6 +1,5 @@
 package com.example.fitness
 
-import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -15,8 +14,6 @@ import com.prolificinteractive.materialcalendarview.format.ArrayWeekDayFormatter
 import com.prolificinteractive.materialcalendarview.format.MonthArrayTitleFormatter
 import com.prolificinteractive.materialcalendarview.format.TitleFormatter
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import org.json.JSONException
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -29,6 +26,7 @@ class CalendarFragment : Fragment() {
     private val utils = Utils()
 
     private var partsList = ArrayList<String>()
+    private var colorsList = ArrayList<String>()
 
     private val recordListViewModel: RecordListViewModel by activityViewModels {
         RecordListViewModelFactory(
@@ -49,26 +47,13 @@ class CalendarFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initCalendar()
         getPartsList()
-
         getRecordList()
     }
 
     //운동 부위 Spinner 쓰일 목록
     private fun getPartsList() {
-        val sharedPreferences = this.requireActivity().getSharedPreferences(MainActivity.utilFileName, Activity.MODE_PRIVATE)
-        val tempPartsList = sharedPreferences.getString("Parts_list", null)
-
-        if(partsList.isEmpty()) {
-            try {
-                val jsonAry = JSONArray(tempPartsList)
-
-                for(i: Int in 0 until jsonAry.length())
-                    partsList.add(jsonAry.optString(i))
-
-            }catch(jsonE: JSONException) {
-                jsonE.stackTrace
-            }
-        }
+        partsList = utils.getPrefList(requireContext(), "Parts_list")
+        colorsList = utils.getPrefList(requireContext(), "Colors_list")
     }
 
     //CalendarView 일정 표시
@@ -78,16 +63,25 @@ class CalendarFragment : Fragment() {
                 val datePartMap = setOrganizeByDate(it)
                 val frequencyMap = getMaxIndex(datePartMap)
 
-                val dateSet = HashSet<CalendarDay>()
-
-                for(date in frequencyMap) {
-                    val tempDate = date.key.split("-")
-                    dateSet.add(CalendarDay.from(tempDate[0].toInt(), tempDate[1].toInt(), tempDate[2].toInt()))
+                for(i: Int in 0 until partsList.size) {
+                    val dateSet = getDateByPart(frequencyMap, i)
+                    binding.calendarCalendar.addDecorator(CalendarDecorator(colorsList[i].toLong(16).toInt(), dateSet))
                 }
-
-                binding.calendarCalendar.addDecorator(CalendarDecorator(0, dateSet))
             }
         }
+    }
+
+    //'turn' Value 가진 key 반환
+    private fun getDateByPart(target: HashMap<String, Int>, turn: Int): HashSet<CalendarDay> {
+        val result = HashSet<CalendarDay>()
+        target
+            .filter { turn == it.value }
+            .map {
+                val tempKey = it.key.split("-")
+                result.add(CalendarDay.from(tempKey[0].toInt(), tempKey[1].toInt(), tempKey[2].toInt()))
+            }
+        
+        return result
     }
 
     //Key 저장된 날짜에서 가장 많이 한 운동 부위의 위치를 반환

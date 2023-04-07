@@ -8,21 +8,19 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.viewModels
+import com.example.fitness.*
 import com.example.fitness.databinding.ActivityOneRecordBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import org.json.JSONException
 
 class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
-//    private val TAG = javaClass.simpleName
     private lateinit var binding: ActivityOneRecordBinding
     private val utils = Utils()
 
     private lateinit var target: TrainingRecord
-    private var editIdMap = HashMap<String, Int>()
     private var partsList = ArrayList<String>()
+    private val idMap = HashMap<String, Int>()
 
     private val recordListViewModel: RecordListViewModel by viewModels {
         RecordListViewModelFactory(
@@ -37,11 +35,13 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(binding.root)
 
         getTarget()
-
-        initSetting()
+        initPicker()
+        initSpinner(target.part)
+        initEdit()
         setBtnListener()
     }
 
+    //Btn Listener
     private fun setBtnListener() {
         binding.btnORecordCheck.setOnClickListener(this)
         binding.btnORecordUpdate.setOnClickListener(this)
@@ -49,6 +49,7 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
         binding.btnORecordCancel.setOnClickListener(this)
     }
 
+    //TrainingRecord 객체 받아옴
     private fun getTarget() {
         @Suppress("DEPRECATION")
         target =
@@ -58,40 +59,29 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
                 intent.getParcelableExtra("Target")!!
     }
 
-    private fun initSetting() {
+    //NumberPicker 설정
+    private fun initPicker() {
         initDate(target.date)
         initTime(target.time)
-
-        initEdit()
-        initSpinner(target.part)
     }
 
+    //Spinner 설정
     private fun initSpinner(outPart: String) {
-        val sharedPreferences = this.getSharedPreferences(MainActivity.utilFileName, MODE_PRIVATE)
-        val tempPartsList = sharedPreferences.getString("Parts_list", null)
+        if(partsList.isEmpty())
+            partsList = utils.getPrefList(this, "Parts_list")
+
         var selectPosition = 0
 
-        if(tempPartsList != null) {
-            try {
-                val jsonAry = JSONArray(tempPartsList)
-
-                for(i: Int in 0 until jsonAry.length()) {
-                    val inPart = jsonAry.optString(i)
-                    partsList.add(inPart)
-
-                    if(outPart == inPart)
-                        selectPosition = i
-                }
-
-            }catch(jsonE: JSONException) {
-                jsonE.stackTrace
-            }
+        for(i: Int in 0 until partsList.size) {
+            if(partsList[i] == outPart)
+                selectPosition = i
         }
 
         binding.spinnerORecordPart.adapter = utils.setSpinnerAdapter(this, partsList)
         binding.spinnerORecordPart.setSelection(selectPosition)
     }
 
+    //Date numberPicker 초기값
     private fun initDate(outDate: String) {
         val inDate = outDate.split("-")
 
@@ -109,6 +99,7 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
         binding.nPickerORecordDay.value = inDate[2].toInt()
     }
 
+    //Time NumberPicker 초기값
     private fun initTime(outTime: String) {
         val inTime = outTime.split(":")
 
@@ -122,6 +113,7 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
         binding.nPickerORecordMinute.value = inTime[1].toInt()
     }
 
+    //EditText 초기값 설정
     private fun initEdit() {
         binding.editORecordName.setText(target.name)
         binding.editORecordSet.setText(target.set.toString())
@@ -129,6 +121,7 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
         initRepAndWt(target.set, target.rep, target.wt)
     }
 
+    //횟수 및 무게 동적 뷰 생성
     @SuppressLint("SetTextI18n")
     private fun initRepAndWt(set: Int, outRep: String, outWt: String) {
         val inRep = outRep.split("_")
@@ -157,8 +150,8 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
             if(i < inWt.size)
                 wtET.setText(inWt[i])
 
-            editIdMap["rep${i + 1}"] = repID
-            editIdMap["wt${i + 1}"] = wtID
+            idMap["rep${i + 1}"] = repID
+            idMap["wt${i + 1}"] = wtID
 
             binding.gridORecordRepAndWt.addView(repET)
             binding.gridORecordRepAndWt.addView(setTV)
@@ -166,12 +159,15 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    //수정 버튼
     private fun updateRecord(record: TrainingRecord) {
         CoroutineScope(Dispatchers.IO).launch {
             recordListViewModel.updateRecord(record)
         }
     }
 
+
+    //삭제 버튼
     private fun deleteRecord(record: TrainingRecord) {
         CoroutineScope(Dispatchers.IO).launch {
             recordListViewModel.deleteRecord(record)
@@ -198,8 +194,8 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
                     binding.spinnerORecordPart.selectedItem.toString(),
                     binding.editORecordName.text.toString(),
                     updateSet,
-                    utils.getEditText(binding.gridORecordRepAndWt, editIdMap, updateSet, "rep"),
-                    utils.getEditText(binding.gridORecordRepAndWt, editIdMap, updateSet, "wt")
+                    utils.getEditText(binding.gridORecordRepAndWt, idMap, updateSet, "rep"),
+                    utils.getEditText(binding.gridORecordRepAndWt, idMap, updateSet, "wt")
                 )
                 updateRecord(updateTarget)
                 setResult(Utils.RESULT_UPDATE)

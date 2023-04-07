@@ -13,9 +13,15 @@
         android:theme="@style/Theme.Fitness"
         tools:targetApi="31">
         <activity
-            android:name=".OneRecordActivity"
-            android:windowSoftInputMode="adjustPan|adjustUnspecified"
+            android:name=".PartsAndColorsActivity"
             android:exported="false" />
+        <activity
+            android:name=".SettingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OneRecordActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan|adjustUnspecified" />
         <activity
             android:name=".BreakActivity"
             android:exported="false" />

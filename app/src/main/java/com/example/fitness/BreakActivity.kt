@@ -21,6 +21,7 @@ class BreakActivity : AppCompatActivity(), View.OnClickListener {
         binding = ActivityBreakBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //객체 받아옴
         val time = intent.getIntExtra("Break", -1)
         val set = intent.getIntExtra("Set", -1)
 

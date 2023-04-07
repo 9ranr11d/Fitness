@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <GridLayout
-        android:id="@+id/grid_record_target"
+        android:id="@+id/grid_d_record_target"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -23,7 +23,7 @@
             android:textSize="15sp" />
 
         <TextView
-            android:id="@+id/text_record_date"
+            android:id="@+id/text_d_record_date"
             android:layout_width="150dp"
             android:layout_height="48dp"
             android:textSize="15sp" />
@@ -38,7 +38,7 @@
             android:textSize="15sp" />
 
         <Spinner
-            android:id="@+id/spinner_record_part"
+            android:id="@+id/spinner_d_record_part"
             android:layout_width="150dp"
             android:layout_height="48dp"
             tools:ignore="SpeakableTextPresentCheck" />
@@ -53,7 +53,7 @@
             android:textSize="15sp" />
 
         <EditText
-            android:id="@+id/edit_record_name"
+            android:id="@+id/edit_d_record_name"
             android:layout_width="150dp"
             android:layout_height="48dp"
             android:hint="@string/hint_name"
@@ -71,7 +71,7 @@
             android:textSize="15sp" />
 
         <TextView
-            android:id="@+id/text_record_set"
+            android:id="@+id/text_d_record_set"
             android:layout_width="150dp"
             android:layout_height="48dp"
             android:textSize="15sp"
@@ -80,10 +80,10 @@
     </GridLayout>
 
     <TextView
-        android:id="@+id/text_record_rep_and_wt_title"
+        android:id="@+id/text_d_record_rep_and_wt_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/grid_record_target"
+        android:layout_below="@+id/grid_d_record_target"
         android:layout_centerHorizontal="true"
         android:text="@string/str_rep_and_wt"
         android:textSize="15sp" />
@@ -91,20 +91,16 @@
     <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="100dp"
-        android:layout_below="@+id/text_record_rep_and_wt_title"
+        android:layout_below="@+id/text_d_record_rep_and_wt_title"
         android:layout_centerHorizontal="true"
         tools:ignore="SpeakableTextPresentCheck" >
 
         <GridLayout
-            android:id="@+id/grid_record_rep_and_wt"
+            android:id="@+id/grid_d_record_rep_and_wt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:columnCount="6" >
-
-
-
-        </GridLayout>
+            android:columnCount="6" />
 
     </ScrollView>
 

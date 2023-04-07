@@ -1,7 +1,6 @@
 package com.example.fitness
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -19,11 +18,11 @@ import com.example.fitness.databinding.FragmentTimerBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import org.json.JSONException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class TimerFragment : Fragment(), View.OnClickListener {
     private val TAG = javaClass.simpleName
@@ -38,7 +37,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
     private var min = 0                                 //분
     private var sec = 0                                 //초
     private var partsList = ArrayList<String>()         //운동 부위 List
-    private var editIdMap = HashMap<String, Int>()      //동적 뷰 ID Map
+    private val idMap = HashMap<String, Int>()          //동적 뷰 ID Map
 
     private val recordListViewModel: RecordListViewModel by activityViewModels {
         RecordListViewModelFactory(
@@ -59,12 +58,8 @@ class TimerFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setFirst()
-
-        getPartsList()
-
         initSetting()
         setBtnListener()
-
         getLauncherResult()
     }
 
@@ -75,7 +70,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
 
     //맨 처음 딱 한번 실행
     private fun setFirst() {
-        val sharedPreferences = this.requireActivity().getSharedPreferences(MainActivity.utilFileName, Activity.MODE_PRIVATE)
+        val sharedPreferences = requireActivity().getSharedPreferences(MainActivity.utilFileName, Activity.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         val isFirst = sharedPreferences.getBoolean("Is_first", true)
 
@@ -83,35 +78,20 @@ class TimerFragment : Fragment(), View.OnClickListener {
         if(isFirst) {
             Log.d(TAG, "First visit")
 
-            val firstPartsList = ArrayList<String>(listOf("가슴", "등", "하체", "어깨", "삼두", "이두", "복근"))
-            val jsonAry = JSONArray()
-
-            for(part in firstPartsList)
-                jsonAry.put(part)
-
             editor.putBoolean("Is_first", false)
-            editor.putString("Parts_list", jsonAry.toString())
+            editor.putString("Parts_list", utils.initList(resources.getStringArray(R.array.init_parts_list).toList()))
+            editor.putString("Colors_list", utils.initList(resources.getStringArray(R.array.init_colors_list).toList()))
             editor.apply()
         }else
             Log.d(TAG, "Not the first visit")
     }
 
-    //SharedPreferences 저장된 변수 가져오기
+    //Parts list 가져오기
     private fun getPartsList() {
-        val sharedPreferences = this.requireActivity().getSharedPreferences(MainActivity.utilFileName, Activity.MODE_PRIVATE)
-        val tempPartsList = sharedPreferences.getString("Parts_list", null)
+        val tempPartsList = utils.getPrefList(requireContext(), "Parts_list")
 
-        if(partsList.isEmpty()) {
-            try {
-                val jsonAry = JSONArray(tempPartsList)
-
-                for(i: Int in 0 until jsonAry.length())
-                    partsList.add(jsonAry.optString(i))
-
-            }catch(jsonE: JSONException) {
-                jsonE.stackTrace
-            }
-        }
+        if(!Arrays.equals(partsList.toArray(), tempPartsList.toArray()))
+            partsList = tempPartsList
     }
 
     //NumberPicker setting
@@ -128,7 +108,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
         binding.nPickerTimerSec.value = sec
     }
 
-    //Button Listener
+    //Btn Listener
     private fun setBtnListener() {
         binding.btnTimerSetPlus.setOnClickListener(this)
         binding.btnTimerSetMinus.setOnClickListener(this)
@@ -136,7 +116,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
         binding.btnTimerStart.setOnClickListener(this)
     }
 
-    //Launcher Result 값 받아옴
+    //Launcher Result
     private fun getLauncherResult() {
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             when(it.resultCode) {
@@ -146,16 +126,16 @@ class TimerFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    //기록 팝업 Setting
-    private fun serRecordView() {
+    //기록 팝업 setting
+    private fun setRecordLay() {
         val nowDate = LocalDateTime.now()
         val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
-        dialogBinding.textRecordDate.text = nowDate.format(dateFormat)
-        dialogBinding.textRecordSet.text = set.toString()
-        dialogBinding.spinnerRecordPart.adapter = utils.setSpinnerAdapter(requireContext(), partsList)
+        dialogBinding.textDRecordDate.text = nowDate.format(dateFormat)
+        dialogBinding.textDRecordSet.text = set.toString()
+        dialogBinding.spinnerDRecordPart.adapter = utils.setSpinnerAdapter(requireContext(), partsList)
 
-        dialogBinding.gridRecordRepAndWt.removeAllViews()
+        dialogBinding.gridDRecordRepAndWt.removeAllViews()
 
         for(i: Int in 1 .. set) {
             val repET = EditText(context)       //횟수 EditText
@@ -172,12 +152,12 @@ class TimerFragment : Fragment(), View.OnClickListener {
             wtET.id = wtID
             utils.setEdit(wtET, "무게")
 
-            editIdMap["rep$i"] = repID
-            editIdMap["wt$i"] = wtID
+            idMap["rep$i"] = repID
+            idMap["wt$i"] = wtID
 
-            dialogBinding.gridRecordRepAndWt.addView(repET)
-            dialogBinding.gridRecordRepAndWt.addView(setTV)
-            dialogBinding.gridRecordRepAndWt.addView(wtET)
+            dialogBinding.gridDRecordRepAndWt.addView(repET)
+            dialogBinding.gridDRecordRepAndWt.addView(setTV)
+            dialogBinding.gridDRecordRepAndWt.addView(wtET)
         }
     }
 
@@ -197,45 +177,44 @@ class TimerFragment : Fragment(), View.OnClickListener {
             }
             R.id.btn_timer_record -> {                                                      //기록
                 if(set > 0) {
-                    val recordView = dialogBinding.root
-                    serRecordView()
+                    val recordLay = dialogBinding.root
+                    setRecordLay()
 
-                    val recordDialog = AlertDialog.Builder(requireContext())
-                        .setTitle("기록")
-                        .setView(recordView)
-                        .setCancelable(false)
-                        .setPositiveButton("추가") { _, _ ->
-                            val dateTime = dialogBinding.textRecordDate.text.toString().split(" ")
+                    val recordDialog = utils.initDialog(requireContext(), "기록")
+                        ?.setView(recordLay)
+                        ?.setPositiveButton("추가") { _, _ ->
+                            val dateTime = dialogBinding.textDRecordDate.text.toString().split(" ")
 
                             val recordToAdd = TrainingRecord(
                                 0,
                                 dateTime[0],
                                 dateTime[1],
-                                dialogBinding.spinnerRecordPart.selectedItem.toString(),
-                                dialogBinding.editRecordName.text.toString(),
-                                dialogBinding.textRecordSet.text.toString().toInt(),
-                                utils.getEditText(dialogBinding.gridRecordRepAndWt, editIdMap, set, "rep"),
-                                utils.getEditText(dialogBinding.gridRecordRepAndWt, editIdMap, set, "wt")
+                                dialogBinding.spinnerDRecordPart.selectedItem.toString(),
+                                dialogBinding.editDRecordName.text.toString(),
+                                dialogBinding.textDRecordSet.text.toString().toInt(),
+                                utils.getEditText(dialogBinding.gridDRecordRepAndWt, idMap, set, "rep"),
+                                utils.getEditText(dialogBinding.gridDRecordRepAndWt, idMap, set, "wt")
                             )
                             insertRecord(recordToAdd)
-                            editIdMap.clear()           //기록 완료 후 잔여 데이터 삭제
+                            idMap.clear()           //기록 완료 후 잔여 데이터 삭제
                             set = 0
                             binding.textTimerSet.text = set.toString()
                             utils.makeToast(requireContext(), "기록에 성공하였습니다.")
 
                             //recordView 중복 문제 해결
-                            if (recordView.parent != null)
-                                (recordView.parent as ViewGroup).removeView(recordView)
+                            if(recordLay.parent != null)
+                                (recordLay.parent as ViewGroup).removeView(recordLay)
                         }
-                        .setNegativeButton("취소") { dialog, _ ->
-                            if (recordView.parent != null)
-                                (recordView.parent as ViewGroup).removeView(recordView)
-
+                        ?.setNegativeButton("취소") { dialog, _ ->
                             dialog.dismiss()
                             utils.makeToast(requireContext(), "취소되었습니다.")
-                        }
 
-                    recordDialog.show()
+                            if(recordLay.parent != null)
+                                (recordLay.parent as ViewGroup).removeView(recordLay)
+                        }
+                        ?.create()
+
+                    recordDialog?.show()
                 }else
                     utils.makeToast(requireContext(), "세트 수가 없습니다.")
             }
@@ -249,6 +228,12 @@ class TimerFragment : Fragment(), View.OnClickListener {
                 launcher.launch(goBreak)
             }
         }
+    }
+
+    //Parts list 변경
+    override fun onStart() {
+        super.onStart()
+        getPartsList()
     }
 
     //Fragment ViewBinding 삭제

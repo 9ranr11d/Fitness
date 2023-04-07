@@ -5,7 +5,7 @@
     android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/text_recycler_date"
+        android:id="@+id/text_i_record_date"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2"
@@ -14,7 +14,7 @@
         android:textSize="15sp" />
 
     <TextView
-        android:id="@+id/text_recycler_part"
+        android:id="@+id/text_i_record_part"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -23,7 +23,7 @@
         android:textSize="15sp" />
 
     <TextView
-        android:id="@+id/text_recycler_name"
+        android:id="@+id/text_i_record_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2"
@@ -32,7 +32,7 @@
         android:textSize="15sp" />
 
     <TextView
-        android:id="@+id/text_recycler_set"
+        android:id="@+id/text_i_record_set"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -41,7 +41,7 @@
         android:textSize="15sp" />
 
     <TextView
-        android:id="@+id/text_recycler_rep_and_wt"
+        android:id="@+id/text_i_record_rep_and_wt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="4"

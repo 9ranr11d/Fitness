@@ -13,6 +13,7 @@ import androidx.room.RoomDatabase
 abstract class DataBase: RoomDatabase() {
     abstract fun TrainingRecordDAO(): TrainingRecordDAO
 
+    //ViewModel 위해 db 선언
     companion object {
         @Volatile
         private var INSTANCE: DataBase? = null

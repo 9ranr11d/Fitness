@@ -6,7 +6,6 @@ import com.prolificinteractive.materialcalendarview.DayViewFacade
 import com.prolificinteractive.materialcalendarview.spans.DotSpan
 
 class CalendarDecorator(private var color: Int, private var dates: HashSet<CalendarDay>) : DayViewDecorator {
-
     override fun shouldDecorate(day: CalendarDay?): Boolean {
         return dates.contains(day)
     }
