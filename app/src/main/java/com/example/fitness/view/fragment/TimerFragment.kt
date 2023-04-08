@@ -1,4 +1,4 @@
-package com.example.fitness
+package com.example.fitness.view.fragment
 
 import android.app.Activity
 import android.content.Intent
@@ -13,8 +13,16 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
+import com.example.fitness.*
+import com.example.fitness.view.model.RecordListApplication
+import com.example.fitness.view.model.RecordListViewModel
+import com.example.fitness.view.model.RecordListViewModelFactory
+import com.example.fitness.data.TrainingRecord
 import com.example.fitness.databinding.DialogRecordBinding
 import com.example.fitness.databinding.FragmentTimerBinding
+import com.example.fitness.util.Utils
+import com.example.fitness.view.activity.BreakActivity
+import com.example.fitness.view.activity.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

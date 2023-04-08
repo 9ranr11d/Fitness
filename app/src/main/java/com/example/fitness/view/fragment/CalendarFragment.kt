@@ -1,4 +1,4 @@
-package com.example.fitness
+package com.example.fitness.view.fragment
 
 import android.os.Bundle
 import android.util.Log
@@ -8,7 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.coroutineScope
+import com.example.fitness.*
+import com.example.fitness.data.DatePart
+import com.example.fitness.view.model.RecordListApplication
+import com.example.fitness.view.model.RecordListViewModel
+import com.example.fitness.view.model.RecordListViewModelFactory
 import com.example.fitness.databinding.FragmentCalendarBinding
+import com.example.fitness.util.CalendarDecorator
+import com.example.fitness.util.Utils
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.format.ArrayWeekDayFormatter
 import com.prolificinteractive.materialcalendarview.format.MonthArrayTitleFormatter

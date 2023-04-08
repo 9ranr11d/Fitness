@@ -1,10 +1,11 @@
-package com.example.fitness
+package com.example.fitness.util
 
 import android.content.Context
 import android.text.InputType
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.fitness.view.activity.MainActivity
 import org.json.JSONArray
 import org.json.JSONException
 import kotlin.math.pow
@@ -116,7 +117,8 @@ class Utils {
 
     //SharedPreference 리스트 저장
     fun setPrefList(context: Context, name: String, ary: List<String>) {
-        val sharedPreferences = context.getSharedPreferences(MainActivity.utilFileName,
+        val sharedPreferences = context.getSharedPreferences(
+            MainActivity.utilFileName,
             AppCompatActivity.MODE_PRIVATE
         )
         val editor = sharedPreferences.edit()

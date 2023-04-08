@@ -1,4 +1,4 @@
-package com.example.fitness
+package com.example.fitness.view.activity
 
 import android.app.Activity
 import android.content.Intent
@@ -9,6 +9,9 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.fitness.R
+import com.example.fitness.view.adapter.SettingListAdapter
+import com.example.fitness.util.Utils
 import com.example.fitness.databinding.ActivitySettingBinding
 
 class SettingActivity : AppCompatActivity(), View.OnClickListener {
@@ -58,7 +61,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
     private fun getLauncherResult() {
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             when(it.resultCode) {
-                Activity.RESULT_CANCELED -> utils.makeToast(this, "취소되었습니다.")
+                Activity.RESULT_CANCELED -> utils.makeToast(this, "저장되었습니다..")
             }
         }
     }

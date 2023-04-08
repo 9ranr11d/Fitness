@@ -1,6 +1,8 @@
-package com.example.fitness
+package com.example.fitness.view.model
 
 import androidx.room.*
+import com.example.fitness.data.DatePart
+import com.example.fitness.data.TrainingRecord
 import kotlinx.coroutines.flow.Flow
 
 @Dao

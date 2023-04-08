@@ -1,7 +1,9 @@
-package com.example.fitness
+package com.example.fitness.view.model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.fitness.data.DatePart
+import com.example.fitness.data.TrainingRecord
 import kotlinx.coroutines.flow.Flow
 
 class RecordListViewModel(private val trainingRecordDAO: TrainingRecordDAO): ViewModel() {

@@ -1,4 +1,4 @@
-package com.example.fitness
+package com.example.fitness.data
 
 import androidx.room.ColumnInfo
 

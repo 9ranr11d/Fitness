@@ -1,9 +1,11 @@
-package com.example.fitness
+package com.example.fitness.view.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import com.example.fitness.R
+import com.example.fitness.util.Utils
 import com.example.fitness.databinding.ActivityBreakBinding
 import java.util.*
 import kotlin.concurrent.timer

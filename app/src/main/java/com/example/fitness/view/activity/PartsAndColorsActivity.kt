@@ -1,4 +1,4 @@
-package com.example.fitness
+package com.example.fitness.view.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,8 +8,16 @@ import androidx.activity.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.fitness.*
+import com.example.fitness.data.PartColor
+import com.example.fitness.view.model.RecordListApplication
+import com.example.fitness.view.model.RecordListViewModel
+import com.example.fitness.view.model.RecordListViewModelFactory
 import com.example.fitness.databinding.ActivityPartsAndColorsBinding
 import com.example.fitness.databinding.DialogEditBinding
+import com.example.fitness.util.ItemTouchCallback
+import com.example.fitness.util.Utils
+import com.example.fitness.view.adapter.PartsAndColorsListAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -160,7 +168,29 @@ class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
                 setResult(RESULT_CANCELED)
                 finish()
             }
-            R.id.btn_parts_and_colors_add -> partsAndColorsListAdapter.setInsert(PartColor("X", "X"))
+            R.id.btn_parts_and_colors_add -> {
+                val insertLay = editBinding.root
+                setEditLay(PartColor("", ""))
+
+                val insertDialog = utils.initDialog(this, "추가")
+                    ?.setView(insertLay)
+                    ?.setPositiveButton("추가") { _, _ ->
+                        partsAndColorsListAdapter.setInsert(PartColor("${editBinding.editDEditPart.text}", "${editBinding.editDEditColor.text}"))
+
+                        if (insertLay.parent != null)
+                            (insertLay.parent as ViewGroup).removeView(insertLay)
+                    }
+                    ?.setNegativeButton("취소") { dialog, _ ->
+                        dialog.dismiss()
+                        utils.makeToast(this, "취소되었습니다.")
+
+                        if (insertLay.parent != null)
+                            (insertLay.parent as ViewGroup).removeView(insertLay)
+                    }
+                    ?.create()
+
+                insertDialog?.show()
+            }
         }
     }
 }

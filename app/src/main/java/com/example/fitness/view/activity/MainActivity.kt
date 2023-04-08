@@ -1,4 +1,4 @@
-package com.example.fitness
+package com.example.fitness.view.activity
 
 import android.app.Activity
 import android.content.Intent
@@ -8,6 +8,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.example.fitness.R
+import com.example.fitness.util.Utils
 import com.example.fitness.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

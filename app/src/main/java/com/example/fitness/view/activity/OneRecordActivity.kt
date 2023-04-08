@@ -1,4 +1,4 @@
-package com.example.fitness
+package com.example.fitness.view.activity
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -9,7 +9,12 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.viewModels
 import com.example.fitness.*
+import com.example.fitness.view.model.RecordListApplication
+import com.example.fitness.view.model.RecordListViewModel
+import com.example.fitness.view.model.RecordListViewModelFactory
+import com.example.fitness.data.TrainingRecord
 import com.example.fitness.databinding.ActivityOneRecordBinding
+import com.example.fitness.util.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

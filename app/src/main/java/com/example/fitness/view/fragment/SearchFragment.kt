@@ -1,4 +1,4 @@
-package com.example.fitness
+package com.example.fitness.view.fragment
 
 import android.app.Activity
 import android.content.Intent
@@ -14,7 +14,15 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.fitness.*
+import com.example.fitness.view.model.RecordListApplication
+import com.example.fitness.view.model.RecordListViewModel
+import com.example.fitness.view.model.RecordListViewModelFactory
+import com.example.fitness.data.TrainingRecord
 import com.example.fitness.databinding.FragmentSearchBinding
+import com.example.fitness.util.Utils
+import com.example.fitness.view.activity.OneRecordActivity
+import com.example.fitness.view.adapter.RecordListAdapter
 import kotlinx.coroutines.launch
 
 class SearchFragment : Fragment() {

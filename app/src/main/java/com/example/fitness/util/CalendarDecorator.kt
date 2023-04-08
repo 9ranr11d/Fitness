@@ -1,4 +1,4 @@
-package com.example.fitness
+package com.example.fitness.util
 
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.DayViewDecorator

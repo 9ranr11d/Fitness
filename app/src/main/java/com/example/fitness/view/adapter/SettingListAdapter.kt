@@ -1,4 +1,4 @@
-package com.example.fitness
+package com.example.fitness.view.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

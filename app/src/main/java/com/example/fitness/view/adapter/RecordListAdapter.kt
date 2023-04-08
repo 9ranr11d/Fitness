@@ -1,4 +1,4 @@
-package com.example.fitness
+package com.example.fitness.view.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -6,9 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.fitness.data.TrainingRecord
+import com.example.fitness.util.Utils
 import com.example.fitness.databinding.ItemRecyclerRecordBinding
 
-class RecordListAdapter(private val onItemClicked: (TrainingRecord) -> Unit): ListAdapter<TrainingRecord, RecordListAdapter.ViewHolder>(DiffCallback) {
+class RecordListAdapter(private val onItemClicked: (TrainingRecord) -> Unit): ListAdapter<TrainingRecord, RecordListAdapter.ViewHolder>(
+    DiffCallback
+) {
     companion object {
         private val utils = Utils()
 

@@ -1,11 +1,14 @@
-package com.example.fitness
+package com.example.fitness.view.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.fitness.util.ItemTouchHelperListener
+import com.example.fitness.data.PartColor
 import com.example.fitness.databinding.ItemRecyclerPartAndColorBinding
 
-class PartsAndColorsListAdapter(private val localList: ArrayList<PartColor>, private val onItemTouch: (String) -> Unit): RecyclerView.Adapter<PartsAndColorsListAdapter.ViewHolder>(), ItemTouchHelperListener {
+class PartsAndColorsListAdapter(private val localList: ArrayList<PartColor>, private val onItemTouch: (String) -> Unit): RecyclerView.Adapter<PartsAndColorsListAdapter.ViewHolder>(),
+    ItemTouchHelperListener {
     //한 줄에 쓸 View 가져오기
     class ViewHolder(private val binding: ItemRecyclerPartAndColorBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(partColor: PartColor) {

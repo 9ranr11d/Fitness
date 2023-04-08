@@ -1,4 +1,4 @@
-package com.example.fitness
+package com.example.fitness.util
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
