@@ -58,9 +58,30 @@ class TimerFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setFirst()
+        getPref()
         initSetting()
         setBtnListener()
         getLauncherResult()
+    }
+
+    //SharedPreferences 데이터 가져오기
+    private fun getPref() {
+        val sharedPreferences = requireActivity().getSharedPreferences(MainActivity.utilFileName, Activity.MODE_PRIVATE)
+        val tempBreak = sharedPreferences.getInt("Break", 60)
+        min = tempBreak / 60
+        sec = tempBreak % 60
+    }
+
+    //SharedPreferences 데이터 저장
+    private fun setPref() {
+        val sharedPreferences = requireActivity().getSharedPreferences(MainActivity.utilFileName, Activity.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        min = binding.nPickerTimerMin.value
+        sec = binding.nPickerTimerSec.value
+
+        editor.putInt("Break", (min * 60) + sec)
+        editor.apply()
     }
 
     private fun initSetting() {
@@ -234,6 +255,11 @@ class TimerFragment : Fragment(), View.OnClickListener {
     override fun onStart() {
         super.onStart()
         getPartsList()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        setPref()
     }
 
     //Fragment ViewBinding 삭제

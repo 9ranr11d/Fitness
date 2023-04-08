@@ -10,22 +10,20 @@ class RecordListViewModel(private val trainingRecordDAO: TrainingRecordDAO): Vie
 
 
     //모든 record 중 date, part 반환
-    fun allDate(): Flow<List<DatePart>> = trainingRecordDAO.getAllDatePart()
+    fun allDatePart(): Flow<List<DatePart>> = trainingRecordDAO.getAllDatePart()
+
+    fun delPart(part: String) = trainingRecordDAO.setDelPart(part)
+
+    fun updatePart(fromPart: String, toPart: String) = trainingRecordDAO.setUpdatePart(fromPart, toPart)
 
     //Record 추가
-    fun insertRecord(trainingRecord: TrainingRecord) {
-        trainingRecordDAO.insertRecord(trainingRecord)
-    }
+    fun insertRecord(trainingRecord: TrainingRecord) = trainingRecordDAO.insertRecord(trainingRecord)
 
     //Record 삭제
-    fun deleteRecord(trainingRecord: TrainingRecord) {
-        trainingRecordDAO.deleteRecord(trainingRecord)
-    }
+    fun deleteRecord(trainingRecord: TrainingRecord) = trainingRecordDAO.deleteRecord(trainingRecord)
 
     //Record 수정
-    fun updateRecord(trainingRecord: TrainingRecord) {
-        trainingRecordDAO.updateRecord(trainingRecord)
-    }
+    fun updateRecord(trainingRecord: TrainingRecord) = trainingRecordDAO.updateRecord(trainingRecord)
 }
 
 class RecordListViewModelFactory(private val trainingRecordDAO: TrainingRecordDAO): ViewModelProvider.Factory {

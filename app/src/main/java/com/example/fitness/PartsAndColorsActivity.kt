@@ -4,11 +4,15 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fitness.databinding.ActivityPartsAndColorsBinding
 import com.example.fitness.databinding.DialogEditBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityPartsAndColorsBinding
@@ -16,6 +20,12 @@ class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
     private val utils = Utils()
 
     private lateinit var partsAndColorsListAdapter: PartsAndColorsListAdapter
+
+    private val recordListViewModel: RecordListViewModel by viewModels {
+        RecordListViewModelFactory(
+            (application as RecordListApplication).dataBase.TrainingRecordDAO()
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +41,6 @@ class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
     //Btn Listener
     private fun setBtnListener() {
         binding.btnPartsAndColorsBack.setOnClickListener(this)
-        binding.btnPartsAndColorsSave.setOnClickListener(this)
         binding.btnPartsAndColorsAdd.setOnClickListener(this)
     }
 
@@ -50,9 +59,11 @@ class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
 
             if(receiveList[0].toInt() == ItemTouchHelper.LEFT) {
                 val delDialog = utils.initDialog(this, "삭제")
-                    ?.setMessage("${receiveList[1]} - ${receiveList[2]} \n해당 부위를 삭제하는 것이 맞습니까?")
+                    ?.setMessage("${receiveList[1]} - ${receiveList[2]} \n해당 부위를 포함한 모든 기록도 같이 삭제됩니다.")
                     ?.setPositiveButton("삭제") { _, _ ->
                         partsAndColorsListAdapter.setDelete(receiveList[3].toInt())
+
+                        setDelPart(receiveList[1])
                     }
                     ?.setNegativeButton("취소") { dialog, _ ->
                         dialog.dismiss()
@@ -76,6 +87,8 @@ class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
                             ),
                             receiveList[3].toInt()
                         )
+
+                        setUpdatePart(receiveList[1], editBinding.editDEditPart.text.toString())
 
                         if (editLay.parent != null)
                             (editLay.parent as ViewGroup).removeView(editLay)
@@ -107,6 +120,40 @@ class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
         editBinding.editDEditColor.setText(partColor.color)
     }
 
+    //해당 부위에 대한 모든 기록 삭제
+    private fun setDelPart(part: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            recordListViewModel.delPart(part)
+        }
+    }
+
+    //해당 부위의 바뀐 이름을 모든 기록에 반영
+    private fun setUpdatePart(fromPart: String, toPart: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            recordListViewModel.updatePart(fromPart, toPart)
+        }
+    }
+
+    //PartColor 객체를 나누어서 sharedPreferences 저장
+    private fun setPrefList() {
+        val partsList = ArrayList<String>()
+        val colorsList = ArrayList<String>()
+
+        partsAndColorsListAdapter.getAll().map {
+            partsList.add(it.part)
+            colorsList.add(it.color)
+        }
+
+        utils.setPrefList(this, "Parts_list", partsList)
+        utils.setPrefList(this, "Colors_list", colorsList)
+    }
+
+    //부위 순서 변경 반영
+    override fun onStop() {
+        super.onStop()
+        setPrefList()
+    }
+
     override fun onClick(v: View?) {
         when(v?.id) {
             R.id.btn_parts_and_colors_back -> {
@@ -114,18 +161,6 @@ class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
                 finish()
             }
             R.id.btn_parts_and_colors_add -> partsAndColorsListAdapter.setInsert(PartColor("X", "X"))
-            R.id.btn_parts_and_colors_save -> {
-                val partsList = ArrayList<String>()
-                val colorsList = ArrayList<String>()
-
-                partsAndColorsListAdapter.getAll().map {
-                    partsList.add(it.part)
-                    colorsList.add(it.color)
-                }
-
-                utils.setPrefList(this, "Parts_list", partsList)
-                utils.setPrefList(this, "Colors_list", colorsList)
-            }
         }
     }
 }

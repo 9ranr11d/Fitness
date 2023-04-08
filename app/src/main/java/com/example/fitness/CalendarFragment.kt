@@ -59,7 +59,7 @@ class CalendarFragment : Fragment() {
     //CalendarView 일정 표시
     private fun getRecordList() {
         lifecycle.coroutineScope.launch {
-            recordListViewModel.allDate().collect {
+            recordListViewModel.allDatePart().collect {
                 val datePartMap = setOrganizeByDate(it)
                 val frequencyMap = getMaxIndex(datePartMap)
 

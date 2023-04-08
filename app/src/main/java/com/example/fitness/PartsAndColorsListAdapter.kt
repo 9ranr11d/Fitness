@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fitness.databinding.ItemRecyclerPartAndColorBinding
 
-class PartsAndColorsListAdapter(private val localList: ArrayList<PartColor>, private val onItemSwipe: (String) -> Unit): RecyclerView.Adapter<PartsAndColorsListAdapter.ViewHolder>(), ItemTouchHelperListener {
+class PartsAndColorsListAdapter(private val localList: ArrayList<PartColor>, private val onItemTouch: (String) -> Unit): RecyclerView.Adapter<PartsAndColorsListAdapter.ViewHolder>(), ItemTouchHelperListener {
     //한 줄에 쓸 View 가져오기
     class ViewHolder(private val binding: ItemRecyclerPartAndColorBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(partColor: PartColor) {
@@ -45,7 +45,7 @@ class PartsAndColorsListAdapter(private val localList: ArrayList<PartColor>, pri
 
     //Swipe
     override fun onItemSwipe(position: Int, direction: Int) {
-        onItemSwipe("${direction}_${localList[position]}_$position")
+        onItemTouch("${direction}_${localList[position]}_$position")
     }
 
     //추가

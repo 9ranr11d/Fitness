@@ -73,9 +73,9 @@ class SearchFragment : Fragment() {
 
     //Spinner
     private fun initSpinner() {
-        binding.spinnerSearchDivision.adapter = utils.setSpinnerAdapter(requireContext(), resources.getStringArray(
-            R.array.search_division
-        ).toCollection(ArrayList()))
+        binding.spinnerSearchDivision.adapter = utils.setSpinnerAdapter(
+            requireContext(), resources.getStringArray(R.array.search_division).toCollection(ArrayList())
+        )
     }
 
     //RecyclerView
