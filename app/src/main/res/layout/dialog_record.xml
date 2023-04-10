@@ -26,6 +26,7 @@
             android:id="@+id/text_d_record_date"
             android:layout_width="150dp"
             android:layout_height="48dp"
+            android:gravity="center_vertical"
             android:textSize="15sp" />
 
         <!-- 부위 -->
@@ -74,6 +75,7 @@
             android:id="@+id/text_d_record_set"
             android:layout_width="150dp"
             android:layout_height="48dp"
+            android:gravity="center_vertical"
             android:textSize="15sp"
             tools:ignore="SpeakableTextPresentCheck" />
 

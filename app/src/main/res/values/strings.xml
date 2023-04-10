@@ -16,6 +16,7 @@
     <string name="str_update">수정</string>
     <string name="str_delete">삭제</string>
     <string name="str_cancel">취소</string>
+    <string name="str_temp">임시저장</string>
 
     <!-- Hint -->
     <string name="hint_name">운동 이름</string>
@@ -42,13 +43,13 @@
     </string-array>
 
     <string-array name="init_colors_list">
-        <item>0xFFDB4455</item>
-        <item>0xFFFF7F00</item>
-        <item>0xFFFDFD96</item>
-        <item>0xFF008000</item>
-        <item>0xFF4AA8D8</item>
-        <item>0xFF0E0F37</item>
-        <item>0xFF8B00FF</item>
+        <item>FFDB4455</item>
+        <item>FFFF7F00</item>
+        <item>FFFDFD96</item>
+        <item>FF008000</item>
+        <item>FF4AA8D8</item>
+        <item>FF0E0F37</item>
+        <item>FF8B00FF</item>
     </string-array>
 
     <!-- Calendar -->

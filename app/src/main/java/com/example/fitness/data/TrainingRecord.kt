@@ -9,13 +9,13 @@ import androidx.room.PrimaryKey
 @Entity
 data class TrainingRecord(
     @PrimaryKey(autoGenerate = true) val id: Int,
-    @ColumnInfo val date: String,
-    @ColumnInfo val time: String,
-    @ColumnInfo val part: String,
-    @ColumnInfo val name: String,
-    @ColumnInfo val set: Int,
-    @ColumnInfo val rep: String,
-    @ColumnInfo val wt: String,
+    @ColumnInfo var date: String,
+    @ColumnInfo var time: String,
+    @ColumnInfo var part: String,
+    @ColumnInfo var name: String,
+    @ColumnInfo var set: Int,
+    @ColumnInfo var rep: String,
+    @ColumnInfo var wt: String,
 ): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),

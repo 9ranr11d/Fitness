@@ -1,5 +1,6 @@
 package com.example.fitness.view.fragment
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -34,18 +35,25 @@ import kotlin.collections.HashMap
 
 class TimerFragment : Fragment(), View.OnClickListener {
     private val TAG = javaClass.simpleName
-    private var _binding: FragmentTimerBinding? = null              //FragmentTimer ViewBinding
+    private var _binding: FragmentTimerBinding? = null
     private val binding get() = _binding!!
-    private var _dialogBinding: DialogRecordBinding? = null         //DialogRecord ViewBinding
-    private val dialogBinding get() = _dialogBinding!!
+    private var _recordBinding: DialogRecordBinding? = null
+    private val recordBinding get() = _recordBinding!!
     private val utils = Utils()
 
     private lateinit var launcher: ActivityResultLauncher<Intent>
-    private var set = 0                                 //세트
-    private var min = 0                                 //분
-    private var sec = 0                                 //초
-    private var partsList = ArrayList<String>()         //운동 부위 List
-    private val idMap = HashMap<String, Int>()          //동적 뷰 ID Map
+    private val nowDate = LocalDateTime.now()
+    private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+    private var set = 0
+    private var min = 0
+    private var sec = 0
+    private lateinit var tempRecord: TrainingRecord
+    private var partsList = ArrayList<String>()
+    private val idMap = HashMap<String, Int>()
+
+    companion object {
+        var routine = 1
+    }
 
     private val recordListViewModel: RecordListViewModel by activityViewModels {
         RecordListViewModelFactory(
@@ -59,7 +67,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
     ): View {
         //ViewBinding
         _binding = FragmentTimerBinding.inflate(inflater, container, false)          //fragment_timer
-        _dialogBinding = DialogRecordBinding.inflate(inflater, container, false)     //dialog_record
+        _recordBinding = DialogRecordBinding.inflate(inflater, container, false)     //dialog_record
         return binding.root
     }
 
@@ -68,6 +76,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
         setFirst()
         getPref()
         initSetting()
+        initNumPicker()
         setBtnListener()
         getLauncherResult()
     }
@@ -76,25 +85,27 @@ class TimerFragment : Fragment(), View.OnClickListener {
     private fun getPref() {
         val sharedPreferences = requireActivity().getSharedPreferences(MainActivity.utilFileName, Activity.MODE_PRIVATE)
         val tempBreak = sharedPreferences.getInt("Break", 60)
+
         min = tempBreak / 60
         sec = tempBreak % 60
     }
 
     //SharedPreferences 데이터 저장
     private fun setPref() {
-        val sharedPreferences = requireActivity().getSharedPreferences(MainActivity.utilFileName, Activity.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-
         min = binding.nPickerTimerMin.value
         sec = binding.nPickerTimerSec.value
 
+        val sharedPreferences = requireActivity().getSharedPreferences(MainActivity.utilFileName, Activity.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
         editor.putInt("Break", (min * 60) + sec)
         editor.apply()
     }
 
     private fun initSetting() {
         binding.textTimerSet.text = "$set"
-        initNumPicker()
+
+        val tempDateTime = nowDate.format(dateFormat).toString().split(" ")
+        tempRecord = TrainingRecord(0, tempDateTime[0], tempDateTime[1], "", "", set, "", "")
     }
 
     //맨 처음 딱 한번 실행
@@ -149,28 +160,41 @@ class TimerFragment : Fragment(), View.OnClickListener {
     private fun getLauncherResult() {
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             when(it.resultCode) {
-                Activity.RESULT_OK -> binding.textTimerSet.text = "${++set}"
+                Activity.RESULT_OK -> {
+                    val tempDateTime = nowDate.format(dateFormat).toString().split(" ")
+                    tempRecord.date = tempDateTime[0]
+                    tempRecord.time = tempDateTime[1]
+                    tempRecord = utils.getParcel(it.data!!, "Temp_record")
+                }
                 Activity.RESULT_CANCELED -> utils.makeToast(requireContext(), "정지되었습니다.")
+                Utils.RESULT_RESERVE -> {
+                    insertRecord(utils.getParcel(it.data!!, "Reserve"))
+                    utils.makeToast(requireContext(), "기록에 성공했습니다.")
+                    binding.textTimerSet.text = "0"
+                }
             }
         }
     }
 
     //기록 팝업 setting
+    @SuppressLint("SetTextI18n")
     private fun setRecordLay() {
-        val nowDate = LocalDateTime.now()
-        val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        recordBinding.textDRecordDate.text = "${tempRecord.date} ${tempRecord.time}"
+        recordBinding.textDRecordSet.text = "$set"
+        recordBinding.spinnerDRecordPart.adapter = utils.setSpinnerAdapter(requireContext(), partsList)
 
-        dialogBinding.textDRecordDate.text = nowDate.format(dateFormat)
-        dialogBinding.textDRecordSet.text = set.toString()
-        dialogBinding.spinnerDRecordPart.adapter = utils.setSpinnerAdapter(requireContext(), partsList)
+        recordBinding.gridDRecordRepAndWt.removeAllViews()
 
-        dialogBinding.gridDRecordRepAndWt.removeAllViews()
-
+        val localRep = tempRecord.rep.split("_")
+        val localWt = tempRecord.wt.split("_")
         for(i: Int in 1 .. set) {
             val repET = EditText(context)       //횟수 EditText
             val repID = View.generateViewId()   //ID
             repET.id = repID
             utils.setEdit(repET,"횟수")
+
+            if(i - 1 < localRep.size)
+                repET.setText(localRep[i - 1])
 
             val setTV = TextView(context)
             setTV.text = "$i"
@@ -181,12 +205,15 @@ class TimerFragment : Fragment(), View.OnClickListener {
             wtET.id = wtID
             utils.setEdit(wtET, "무게")
 
+            if(i - 1 < localWt.size)
+                wtET.setText(localWt[i - 1])
+
             idMap["rep$i"] = repID
             idMap["wt$i"] = wtID
 
-            dialogBinding.gridDRecordRepAndWt.addView(repET)
-            dialogBinding.gridDRecordRepAndWt.addView(setTV)
-            dialogBinding.gridDRecordRepAndWt.addView(wtET)
+            recordBinding.gridDRecordRepAndWt.addView(repET)
+            recordBinding.gridDRecordRepAndWt.addView(setTV)
+            recordBinding.gridDRecordRepAndWt.addView(wtET)
         }
     }
 
@@ -194,43 +221,42 @@ class TimerFragment : Fragment(), View.OnClickListener {
     private fun insertRecord(record: TrainingRecord) {
         CoroutineScope(Dispatchers.IO).launch {
             recordListViewModel.insertRecord(record)
+            set = 0
+            tempRecord.set = set
+            tempRecord.rep = ""
+            tempRecord.wt = ""
+            idMap.clear()
         }
     }
 
     override fun onClick(v: View?) {
         when(v?.id) {
-            R.id.btn_timer_set_plus -> binding.textTimerSet.text = (++set).toString()       //세트 수 증가
+            R.id.btn_timer_set_plus -> binding.textTimerSet.text = "${++set}"       //세트 수 증가
             R.id.btn_timer_set_minus -> {                                                   //세트 수 감소
                 if(set > 0)
-                    binding.textTimerSet.text = (--set).toString()
+                    binding.textTimerSet.text = "${--set}"
             }
             R.id.btn_timer_record -> {                                                      //기록
                 if(set > 0) {
-                    val recordLay = dialogBinding.root
+                    val recordLay = recordBinding.root
                     setRecordLay()
 
                     val recordDialog = utils.initDialog(requireContext(), "기록")
                         ?.setView(recordLay)
                         ?.setPositiveButton("추가") { _, _ ->
-                            val dateTime = dialogBinding.textDRecordDate.text.toString().split(" ")
+                            val tempDateTime = nowDate.format(dateFormat).toString().split(" ")
+                            tempRecord.date = tempDateTime[0]
+                            tempRecord.time = tempDateTime[1]
+                            tempRecord.part = "${recordBinding.spinnerDRecordPart.selectedItem}"
+                            tempRecord.name = utils.checkName("${recordBinding.editDRecordName.text}", routine++)
+                            tempRecord.set = set
+                            tempRecord.rep = utils.getEditText(recordBinding.gridDRecordRepAndWt, idMap, tempRecord.set, "rep", "0")
+                            tempRecord.wt = utils.getEditText(recordBinding.gridDRecordRepAndWt, idMap, tempRecord.set, "wt", "0")
 
-                            val recordToAdd = TrainingRecord(
-                                0,
-                                dateTime[0],
-                                dateTime[1],
-                                dialogBinding.spinnerDRecordPart.selectedItem.toString(),
-                                dialogBinding.editDRecordName.text.toString(),
-                                dialogBinding.textDRecordSet.text.toString().toInt(),
-                                utils.getEditText(dialogBinding.gridDRecordRepAndWt, idMap, set, "rep"),
-                                utils.getEditText(dialogBinding.gridDRecordRepAndWt, idMap, set, "wt")
-                            )
-                            insertRecord(recordToAdd)
-                            idMap.clear()           //기록 완료 후 잔여 데이터 삭제
-                            set = 0
-                            binding.textTimerSet.text = set.toString()
-                            utils.makeToast(requireContext(), "기록에 성공하였습니다.")
+                            insertRecord(tempRecord)
+                            utils.makeToast(requireContext(), "기록에 성공했습니다.")
+                            binding.textTimerSet.text = "0"
 
-                            //recordView 중복 문제 해결
                             if(recordLay.parent != null)
                                 (recordLay.parent as ViewGroup).removeView(recordLay)
                         }
@@ -250,9 +276,8 @@ class TimerFragment : Fragment(), View.OnClickListener {
             R.id.btn_timer_start -> {                                                       //타이머 시작
                 val goBreak = Intent(requireContext(), BreakActivity::class.java)
                 val time = (binding.nPickerTimerMin.value * 60) + binding.nPickerTimerSec.value
-                var tempSet = binding.textTimerSet.text.toString().toInt()
                 goBreak.putExtra("Break", time)
-                goBreak.putExtra("Set", ++tempSet)
+                goBreak.putExtra("Temp_record", tempRecord)
 
                 launcher.launch(goBreak)
             }
@@ -274,6 +299,6 @@ class TimerFragment : Fragment(), View.OnClickListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        _dialogBinding = null
+        _recordBinding = null
     }
 }

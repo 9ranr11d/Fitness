@@ -1,10 +1,13 @@
 package com.example.fitness.util
 
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.text.InputType
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.fitness.data.TrainingRecord
 import com.example.fitness.view.activity.MainActivity
 import org.json.JSONArray
 import org.json.JSONException
@@ -14,6 +17,7 @@ class Utils {
     companion object {
         const val RESULT_UPDATE = 1
         const val RESULT_DELETE = 2
+        const val RESULT_RESERVE = 3
     }
 
     //Spinner Adapter
@@ -49,7 +53,7 @@ class Utils {
     }
 
     //동적 EditText 값 추출 ver.1
-    fun getEditText(targetGrid: GridLayout, idMap: HashMap<String, Int>, size: Int, keyword: String): String {
+    fun getEditText(targetGrid: GridLayout, idMap: HashMap<String, Int>, size: Int, keyword: String, nullStr: String): String {
         val result = StringBuilder()
 
         for (i: Int in 1..size) {
@@ -59,7 +63,7 @@ class Utils {
             if(value.isNotEmpty())
                 result.append(value)
             else
-                result.append("0")
+                result.append(nullStr)
 
             if(i < size)
                 result.append("_")
@@ -142,4 +146,19 @@ class Utils {
 
         return jsonAry.toString()
     }
+
+    //이름이 비어있는지 확인
+    fun checkName(name: String, routine: Int): String {
+        if(name.isEmpty())
+            return "Routine $routine"
+
+        return name
+    }
+
+    @Suppress("DEPRECATION")
+    fun getParcel(intent: Intent, keyword: String): TrainingRecord =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            intent.getParcelableExtra(keyword, TrainingRecord::class.java)!!
+        else
+            intent.getParcelableExtra(keyword)!!
 }

@@ -1,7 +1,6 @@
 package com.example.fitness.view.activity
 
 import android.annotation.SuppressLint
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -56,12 +55,7 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
 
     //TrainingRecord 객체 받아옴
     private fun getTarget() {
-        @Suppress("DEPRECATION")
-        target =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                intent.getParcelableExtra("Target", TrainingRecord::class.java)!!
-            else
-                intent.getParcelableExtra("Target")!!
+        target = utils.getParcel(intent, "Target")
     }
 
     //NumberPicker 설정
@@ -72,18 +66,10 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
 
     //Spinner 설정
     private fun initSpinner(outPart: String) {
-        if(partsList.isEmpty())
-            partsList = utils.getPrefList(this, "Parts_list")
-
-        var selectPosition = 0
-
-        for(i: Int in 0 until partsList.size) {
-            if(partsList[i] == outPart)
-                selectPosition = i
-        }
+        partsList = utils.getPrefList(this, "Parts_list")
 
         binding.spinnerORecordPart.adapter = utils.setSpinnerAdapter(this, partsList)
-        binding.spinnerORecordPart.setSelection(selectPosition)
+        binding.spinnerORecordPart.setSelection(partsList.indexOf(outPart))
     }
 
     //Date numberPicker 초기값
@@ -199,8 +185,8 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
                     binding.spinnerORecordPart.selectedItem.toString(),
                     binding.editORecordName.text.toString(),
                     updateSet,
-                    utils.getEditText(binding.gridORecordRepAndWt, idMap, updateSet, "rep"),
-                    utils.getEditText(binding.gridORecordRepAndWt, idMap, updateSet, "wt")
+                    utils.getEditText(binding.gridORecordRepAndWt, idMap, updateSet, "rep", "0"),
+                    utils.getEditText(binding.gridORecordRepAndWt, idMap, updateSet, "wt", "0")
                 )
                 updateRecord(updateTarget)
                 setResult(Utils.RESULT_UPDATE)
