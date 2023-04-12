@@ -14,6 +14,7 @@ class PartsAndColorsListAdapter(private val localList: ArrayList<PartColor>, pri
         fun bind(partColor: PartColor) {
             binding.textIPartAndColorPart.text = partColor.part
             binding.textIPartAndColorColor.text = partColor.color
+            binding.viewIPartAndColorColor.setBackgroundColor(partColor.color.toLong(16).toInt())
         }
     }
 

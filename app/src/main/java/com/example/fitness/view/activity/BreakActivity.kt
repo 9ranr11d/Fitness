@@ -9,12 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.example.fitness.R
 import com.example.fitness.data.TrainingRecord
 import com.example.fitness.util.Utils
 import com.example.fitness.databinding.ActivityBreakBinding
 import com.example.fitness.databinding.DialogRecordBinding
-import com.example.fitness.view.fragment.TimerFragment
 import java.util.*
 import kotlin.concurrent.timer
 
@@ -28,6 +28,7 @@ class BreakActivity : AppCompatActivity(), View.OnClickListener {
     private var time = 0
     private lateinit var tempRecord: TrainingRecord
     private var isReserve = false
+    private var isLock = true
     private val idMap = HashMap<String, Int>()
 
     @SuppressLint("SetTextI18n")
@@ -38,7 +39,15 @@ class BreakActivity : AppCompatActivity(), View.OnClickListener {
         recordBinding = DialogRecordBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //객체 받아옴
+        setLock(isLock)
+        getObj()
+        setProgressBar(time)
+        setBtnListener()
+        startTimeTask(time)
+    }
+
+    //객체 받아옴
+    private fun getObj() {
         time = intent.getIntExtra("Break", -1)
         tempRecord = utils.getParcel(intent, "Temp_record")
 
@@ -51,16 +60,13 @@ class BreakActivity : AppCompatActivity(), View.OnClickListener {
 
         binding.textBreakNum.text = "$time"
         binding.textBreakSet.text = "${++tempRecord.set}"
-
-        setProgressBar(time)
-        setBtnListener()
-        startTimeTask(time)
     }
 
     //Button Listener
     private fun setBtnListener() {
         binding.btnBreakStop.setOnClickListener(this)
         binding.btnBreakTemp.setOnClickListener(this)
+        binding.btnBreakLock.setOnClickListener(this)
     }
 
     //Timer 시작
@@ -157,6 +163,19 @@ class BreakActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun setLock(isLock: Boolean) {
+        if(isLock) {
+            binding.btnBreakStop.isEnabled = false
+            binding.btnBreakTemp.isEnabled = false
+            binding.btnBreakLock.background = ContextCompat.getDrawable(this, R.drawable.img_unlock)
+        }
+        else {
+            binding.btnBreakStop.isEnabled = true
+            binding.btnBreakTemp.isEnabled = true
+            binding.btnBreakLock.background = ContextCompat.getDrawable(this, R.drawable.img_lock)
+        }
+    }
+
     @SuppressLint("SetTextI18n")
     override fun onClick(v: View?) {
         when(v?.id) {
@@ -191,7 +210,7 @@ class BreakActivity : AppCompatActivity(), View.OnClickListener {
                     ?.setNeutralButton(reserveState) { _, _ ->
                         if(!isReserve) {
                             tempRecord.part = recordBinding.spinnerDRecordPart.selectedItem.toString()
-                            tempRecord.name = utils.checkName(recordBinding.editDRecordName.text.toString(), TimerFragment.routine++)
+                            tempRecord.name = utils.checkName(recordBinding.editDRecordName.text.toString())
                             tempRecord.rep = utils.getEditText(recordBinding.gridDRecordRepAndWt, idMap, tempRecord.set, "rep", "0")
                             tempRecord.wt = utils.getEditText(recordBinding.gridDRecordRepAndWt, idMap, tempRecord.set, "wt", "0")
 
@@ -210,6 +229,29 @@ class BreakActivity : AppCompatActivity(), View.OnClickListener {
                     ?.create()
 
                 recordDialog?.show()
+            }
+            R.id.btn_break_lock -> {
+                val lockDialogMsg =
+                    if(isLock)
+                        "화면의 잠금을 해제하시겠습니까?"
+                    else
+                        "화면의 터치를 잠금 하시겠습니까?"
+
+                val lockDialog = utils.initDialog(this, "화면 잠금")
+                    ?.setMessage(lockDialogMsg)
+                    ?.setPositiveButton("확인") { dialog, _ ->
+                        dialog.dismiss()
+                        isLock = !isLock
+
+                        setLock(isLock)
+                    }
+                    ?.setNegativeButton("취소") { dialog, _ ->
+                        dialog.dismiss()
+                        utils.makeToast(this, "취소되었습니다.")
+                    }
+                    ?.create()
+
+                lockDialog?.show()
             }
         }
     }

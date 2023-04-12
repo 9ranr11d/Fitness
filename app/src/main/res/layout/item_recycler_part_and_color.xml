@@ -7,20 +7,31 @@
 
     <TextView
         android:id="@+id/text_i_part_and_color_part"
-        android:layout_width="150dp"
-        android:layout_height="48dp"
-        android:layout_alignParentStart="true"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/view_i_part_and_color_color"
         android:textSize="15sp"
         tools:ignore="DuplicateSpeakableTextCheck" />
 
+    <View
+        android:id="@+id/view_i_part_and_color_color"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/text_i_part_and_color_color"
+        android:layout_marginEnd="5dp" />
+
     <TextView
         android:id="@+id/text_i_part_and_color_color"
-        android:layout_width="150dp"
-        android:layout_height="48dp"
-        android:layout_toEndOf="@+id/text_i_part_and_color_part"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/btn_i_part_and_color_sort"
         android:textSize="15sp" />
 
     <Button
+        android:id="@+id/btn_i_part_and_color_sort"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentEnd="true"

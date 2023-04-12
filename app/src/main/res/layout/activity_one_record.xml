@@ -14,26 +14,26 @@
         android:layout_centerHorizontal="true" >
 
         <Button
-            android:id="@+id/btn_o_record_update"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
+            android:id="@+id/btn_o_record_complete"
             style="?android:attr/buttonBarButtonStyle"
-            android:text="@string/str_update"
-            android:textSize="15sp" />
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="5dp"
+            android:textSize="15sp"
+            tools:ignore="SpeakableTextPresentCheck,VisualLintBounds" />
 
         <Button
             android:id="@+id/btn_o_record_delete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
             style="?android:attr/buttonBarButtonStyle"
             android:text="@string/str_delete"
             android:textSize="15sp" />
 
         <Button
             android:id="@+id/btn_o_record_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
             android:layout_marginStart="5dp"
             style="?android:attr/buttonBarButtonStyle"
             android:text="@string/str_cancel"

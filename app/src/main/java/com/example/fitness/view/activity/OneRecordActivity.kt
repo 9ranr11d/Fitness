@@ -19,10 +19,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
+//    private val TAG = javaClass.simpleName
     private lateinit var binding: ActivityOneRecordBinding
     private val utils = Utils()
 
     private lateinit var target: TrainingRecord
+    private var isEdit = true
     private var partsList = ArrayList<String>()
     private val idMap = HashMap<String, Int>()
 
@@ -48,7 +50,7 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
     //Btn Listener
     private fun setBtnListener() {
         binding.btnORecordCheck.setOnClickListener(this)
-        binding.btnORecordUpdate.setOnClickListener(this)
+        binding.btnORecordComplete.setOnClickListener(this)
         binding.btnORecordDelete.setOnClickListener(this)
         binding.btnORecordCancel.setOnClickListener(this)
     }
@@ -56,6 +58,12 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
     //TrainingRecord 객체 받아옴
     private fun getTarget() {
         target = utils.getParcel(intent, "Target")
+        isEdit = intent.getBooleanExtra("Is_edit", false)
+
+        if(isEdit)
+            binding.btnORecordComplete.text = resources.getString(R.string.str_update)
+        else
+            binding.btnORecordComplete.text = resources.getString(R.string.str_record)
     }
 
     //NumberPicker 설정
@@ -69,7 +77,10 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
         partsList = utils.getPrefList(this, "Parts_list")
 
         binding.spinnerORecordPart.adapter = utils.setSpinnerAdapter(this, partsList)
-        binding.spinnerORecordPart.setSelection(partsList.indexOf(outPart))
+
+        val position = partsList.indexOf(outPart)
+        if(position != -1)
+            binding.spinnerORecordPart.setSelection(position)
     }
 
     //Date numberPicker 초기값
@@ -150,6 +161,12 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun insertRecord(record: TrainingRecord) {
+        CoroutineScope(Dispatchers.IO).launch {
+            recordListViewModel.insertRecord(record)
+        }
+    }
+
     //수정 버튼
     private fun updateRecord(record: TrainingRecord) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -168,7 +185,7 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when(v?.id) {
             R.id.btn_o_record_check -> initRepAndWt(binding.editORecordSet.text.toString().toInt(), target.rep, target.wt)
-            R.id.btn_o_record_update -> {
+            R.id.btn_o_record_complete -> {
                 val updateMonth = utils.intFullFormat(binding.nPickerORecordMonth.value, 2)
                 val updateDay = utils.intFullFormat(binding.nPickerORecordDay.value, 2)
                 val updateHour = utils.intFullFormat(binding.nPickerORecordHour.value, 2)
@@ -178,18 +195,21 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
                 val updateTime = "$updateHour:$updateMinute"
                 val updateSet = binding.editORecordSet.text.toString().toInt()
 
-                val updateTarget = TrainingRecord(
-                    target.id,
-                    updateDate,
-                    updateTime,
-                    binding.spinnerORecordPart.selectedItem.toString(),
-                    binding.editORecordName.text.toString(),
-                    updateSet,
-                    utils.getEditText(binding.gridORecordRepAndWt, idMap, updateSet, "rep", "0"),
-                    utils.getEditText(binding.gridORecordRepAndWt, idMap, updateSet, "wt", "0")
-                )
-                updateRecord(updateTarget)
-                setResult(Utils.RESULT_UPDATE)
+                target.date = updateDate
+                target.time = updateTime
+                target.part = "${binding.spinnerORecordPart.selectedItem}"
+                target.name = utils.checkName("${binding.editORecordName.text}")
+                target.set = updateSet
+                target.rep = utils.getEditText(binding.gridORecordRepAndWt, idMap, updateSet, "rep", "0")
+                target.wt = utils.getEditText(binding.gridORecordRepAndWt, idMap, updateSet, "wt", "0")
+
+                if(isEdit) {
+                    updateRecord(target)
+                    setResult(Utils.RESULT_UPDATE)
+                }else {
+                    insertRecord(target)
+                    setResult(Utils.RESULT_INSERT)
+                }
                 finish()
             }
             R.id.btn_o_record_delete -> {

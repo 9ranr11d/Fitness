@@ -27,8 +27,6 @@ import com.example.fitness.view.activity.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -42,18 +40,12 @@ class TimerFragment : Fragment(), View.OnClickListener {
     private val utils = Utils()
 
     private lateinit var launcher: ActivityResultLauncher<Intent>
-    private val nowDate = LocalDateTime.now()
-    private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
     private var set = 0
     private var min = 0
     private var sec = 0
     private lateinit var tempRecord: TrainingRecord
     private var partsList = ArrayList<String>()
     private val idMap = HashMap<String, Int>()
-
-    companion object {
-        var routine = 1
-    }
 
     private val recordListViewModel: RecordListViewModel by activityViewModels {
         RecordListViewModelFactory(
@@ -104,7 +96,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
     private fun initSetting() {
         binding.textTimerSet.text = "$set"
 
-        val tempDateTime = nowDate.format(dateFormat).toString().split(" ")
+        val tempDateTime = utils.getDateTime("yyyy-MM-dd HH:mm").split(" ")
         tempRecord = TrainingRecord(0, tempDateTime[0], tempDateTime[1], "", "", set, "", "")
     }
 
@@ -116,14 +108,14 @@ class TimerFragment : Fragment(), View.OnClickListener {
 
         //맨 처음 시작할 때만 실행
         if(isFirst) {
-            Log.d(TAG, "First visit")
+            Log.d(TAG, "First visit.")
 
             editor.putBoolean("Is_first", false)
             editor.putString("Parts_list", utils.initList(resources.getStringArray(R.array.init_parts_list).toList()))
             editor.putString("Colors_list", utils.initList(resources.getStringArray(R.array.init_colors_list).toList()))
             editor.apply()
         }else
-            Log.d(TAG, "Not the first visit")
+            Log.d(TAG, "Not the first visit.")
     }
 
     //Parts list 가져오기
@@ -161,7 +153,7 @@ class TimerFragment : Fragment(), View.OnClickListener {
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             when(it.resultCode) {
                 Activity.RESULT_OK -> {
-                    val tempDateTime = nowDate.format(dateFormat).toString().split(" ")
+                    val tempDateTime = utils.getDateTime("yyyy-MM-dd HH:mm").split(" ")
                     tempRecord.date = tempDateTime[0]
                     tempRecord.time = tempDateTime[1]
                     tempRecord = utils.getParcel(it.data!!, "Temp_record")
@@ -243,12 +235,13 @@ class TimerFragment : Fragment(), View.OnClickListener {
 
                     val recordDialog = utils.initDialog(requireContext(), "기록")
                         ?.setView(recordLay)
-                        ?.setPositiveButton("추가") { _, _ ->
-                            val tempDateTime = nowDate.format(dateFormat).toString().split(" ")
+                        ?.setPositiveButton("추가") { dialog, _ ->
+                            dialog.dismiss()
+                            val tempDateTime = utils.getDateTime("yyyy-MM-dd HH:mm").split(" ")
                             tempRecord.date = tempDateTime[0]
                             tempRecord.time = tempDateTime[1]
                             tempRecord.part = "${recordBinding.spinnerDRecordPart.selectedItem}"
-                            tempRecord.name = utils.checkName("${recordBinding.editDRecordName.text}", routine++)
+                            tempRecord.name = utils.checkName("${recordBinding.editDRecordName.text}")
                             tempRecord.set = set
                             tempRecord.rep = utils.getEditText(recordBinding.gridDRecordRepAndWt, idMap, tempRecord.set, "rep", "0")
                             tempRecord.wt = utils.getEditText(recordBinding.gridDRecordRepAndWt, idMap, tempRecord.set, "wt", "0")

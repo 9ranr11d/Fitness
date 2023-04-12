@@ -10,9 +10,8 @@ import com.example.fitness.data.TrainingRecord
 import com.example.fitness.util.Utils
 import com.example.fitness.databinding.ItemRecyclerRecordBinding
 
-class RecordListAdapter(private val onItemClicked: (TrainingRecord) -> Unit): ListAdapter<TrainingRecord, RecordListAdapter.ViewHolder>(
-    DiffCallback
-) {
+class RecordListAdapter(private val onItemClicked: (TrainingRecord) -> Unit)
+    : ListAdapter<TrainingRecord, RecordListAdapter.ViewHolder>(DiffCallback) {
     companion object {
         private val utils = Utils()
 

@@ -1,11 +1,15 @@
 package com.example.fitness.view.fragment
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.coroutineScope
 import com.example.fitness.*
@@ -16,6 +20,7 @@ import com.example.fitness.view.model.RecordListViewModelFactory
 import com.example.fitness.databinding.FragmentCalendarBinding
 import com.example.fitness.util.CalendarDecorator
 import com.example.fitness.util.Utils
+import com.example.fitness.view.activity.DayOfMonthActivity
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.format.ArrayWeekDayFormatter
 import com.prolificinteractive.materialcalendarview.format.MonthArrayTitleFormatter
@@ -34,6 +39,7 @@ class CalendarFragment : Fragment() {
 
     private var partsList = ArrayList<String>()
     private var colorsList = ArrayList<String>()
+    private lateinit var launcher: ActivityResultLauncher<Intent>
 
     private val recordListViewModel: RecordListViewModel by activityViewModels {
         RecordListViewModelFactory(
@@ -54,7 +60,8 @@ class CalendarFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initCalendar()
         getPartsList()
-        getRecordList()
+        setCalendarDeco()
+        getLauncherResult()
     }
 
     //운동 부위 Spinner 쓰일 목록
@@ -64,9 +71,12 @@ class CalendarFragment : Fragment() {
     }
 
     //CalendarView 일정 표시
-    private fun getRecordList() {
+    private fun setCalendarDeco() {
         lifecycle.coroutineScope.launch {
             recordListViewModel.allDatePart().collect {
+                Log.d(TAG, "Data has changed.")
+                binding.calendarCalendar.removeDecorators()     //데이터 변경 시 초기화
+
                 val datePartMap = setOrganizeByDate(it)
                 val frequencyMap = getMaxIndex(datePartMap)
 
@@ -126,7 +136,7 @@ class CalendarFragment : Fragment() {
         return result
     }
 
-    //CalendarView 날짜 클릭 Listener
+    //CalendarView
     private fun initCalendar() {
         binding.calendarCalendar.setTitleFormatter(MonthArrayTitleFormatter(resources.getTextArray(R.array.calendar_months)))
         binding.calendarCalendar.setTitleFormatter(TitleFormatter {
@@ -135,7 +145,19 @@ class CalendarFragment : Fragment() {
         binding.calendarCalendar.setWeekDayFormatter(ArrayWeekDayFormatter(resources.getTextArray(R.array.calendar_days_of_week)))
 
         binding.calendarCalendar.setOnDateChangedListener { _, date, _ ->
-            Log.i(TAG, "${date.date}")
+            val goDayOfMonth = Intent(requireContext(), DayOfMonthActivity::class.java)
+            goDayOfMonth.putExtra("Date", "${date.date}")
+
+            launcher.launch(goDayOfMonth)
+        }
+    }
+
+    //Launcher Result
+    private fun getLauncherResult() {
+        launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            when(it.resultCode) {
+                Activity.RESULT_CANCELED -> utils.makeToast(requireContext(), "취소되었습니다.")
+            }
         }
     }
 

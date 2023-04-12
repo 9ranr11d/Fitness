@@ -11,13 +11,16 @@ import com.example.fitness.data.TrainingRecord
 import com.example.fitness.view.activity.MainActivity
 import org.json.JSONArray
 import org.json.JSONException
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.math.pow
 
 class Utils {
     companion object {
-        const val RESULT_UPDATE = 1
-        const val RESULT_DELETE = 2
-        const val RESULT_RESERVE = 3
+        const val RESULT_INSERT = 1
+        const val RESULT_UPDATE = 2
+        const val RESULT_DELETE = 3
+        const val RESULT_RESERVE = 4
     }
 
     //Spinner Adapter
@@ -148,9 +151,9 @@ class Utils {
     }
 
     //이름이 비어있는지 확인
-    fun checkName(name: String, routine: Int): String {
+    fun checkName(name: String): String {
         if(name.isEmpty())
-            return "Routine $routine"
+            return "Routine ${MainActivity.routine++}"
 
         return name
     }
@@ -161,4 +164,11 @@ class Utils {
             intent.getParcelableExtra(keyword, TrainingRecord::class.java)!!
         else
             intent.getParcelableExtra(keyword)!!
+
+    fun getDateTime(pattern: String): String {
+        val nowDate = LocalDateTime.now()
+        val dateFormat = DateTimeFormatter.ofPattern(pattern)
+
+        return nowDate.format(dateFormat).toString()
+    }
 }

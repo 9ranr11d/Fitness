@@ -13,6 +13,7 @@ import com.example.fitness.util.Utils
 import com.example.fitness.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+//    private val TAG = javaClass.simpleName
     private lateinit var binding: ActivityMainBinding
     private val utils = Utils()
 
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val utilFileName = "utilVar"
+        var routine = 1
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

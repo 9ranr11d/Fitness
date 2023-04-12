@@ -26,6 +26,7 @@ import com.example.fitness.view.adapter.RecordListAdapter
 import kotlinx.coroutines.launch
 
 class SearchFragment : Fragment() {
+//    private val TAG = javaClass.simpleName
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
     private val utils = Utils()
@@ -54,7 +55,20 @@ class SearchFragment : Fragment() {
         setRecord()
         initSpinner()
         initSearch()
+        setBtnListener()
         getLauncherResult()
+    }
+
+    private fun setBtnListener() {
+        binding.btnSearchAdd.setOnClickListener {
+            val tempDateTime = utils.getDateTime("yyyy-MM-dd HH:mm").split(" ")
+            val addRecord = TrainingRecord(0, tempDateTime[0], tempDateTime[1], "", "", 0, "", "")
+            val goOneRecord = Intent(requireContext(), OneRecordActivity::class.java)
+            goOneRecord.putExtra("Target", addRecord)
+            goOneRecord.putExtra("Is_edit", false)
+
+            launcher.launch(goOneRecord)
+        }
     }
 
     //SearchView
@@ -94,6 +108,7 @@ class SearchFragment : Fragment() {
         recordListAdapter = RecordListAdapter {
             val goOneRecord = Intent(context, OneRecordActivity::class.java)
             goOneRecord.putExtra("Target", it)
+            goOneRecord.putExtra("Is_edit", true)
 
             launcher.launch(goOneRecord)
         }
@@ -122,9 +137,10 @@ class SearchFragment : Fragment() {
                     if(isName) {
                         if(one.name.lowercase().contains(keyword.lowercase()))
                             searchRecords += one
-                    }else
-                        if(one.part.lowercase().contains(keyword.lowercase()))
+                    }else {
+                        if (one.part.lowercase().contains(keyword.lowercase()))
                             searchRecords += one
+                    }
                 }
 
                 recordListAdapter.submitList(searchRecords)
@@ -136,6 +152,7 @@ class SearchFragment : Fragment() {
     private fun getLauncherResult() {
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             when(it.resultCode) {
+                Utils.RESULT_INSERT -> utils.makeToast(requireContext(), "기록에 성공했습니다.")
                 Utils.RESULT_UPDATE -> utils.makeToast(requireContext(), "기록 갱신에 성공했습니다.")
                 Utils.RESULT_DELETE -> utils.makeToast(requireContext(), "기록 삭제에 성공했습니다.")
                 Activity.RESULT_CANCELED -> utils.makeToast(requireContext(), "취소되었습니다.")

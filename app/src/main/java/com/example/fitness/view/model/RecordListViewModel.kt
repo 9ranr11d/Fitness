@@ -7,29 +7,24 @@ import com.example.fitness.data.TrainingRecord
 import kotlinx.coroutines.flow.Flow
 
 class RecordListViewModel(private val trainingRecordDAO: TrainingRecordDAO): ViewModel() {
-    //모든 record 반환
+    //모든, 날짜랑 부위만, 한 날짜의 Record 실시간으로 요구
     fun allRecord(): Flow<List<TrainingRecord>> = trainingRecordDAO.getAllRecord()
-
-
-    //모든 record 중 date, part 반환
     fun allDatePart(): Flow<List<DatePart>> = trainingRecordDAO.getAllDatePart()
+    fun dateOfMonth(date: String): Flow<List<TrainingRecord>> = trainingRecordDAO.getDayOfMonth(date)
 
+    //부위 삭제
     fun delPart(part: String) = trainingRecordDAO.setDelPart(part)
 
     fun updatePart(fromPart: String, toPart: String) = trainingRecordDAO.setUpdatePart(fromPart, toPart)
 
-    //Record 추가
+    //Record 추가, 수정, 삭제
     fun insertRecord(trainingRecord: TrainingRecord) = trainingRecordDAO.insertRecord(trainingRecord)
-
-    //Record 삭제
-    fun deleteRecord(trainingRecord: TrainingRecord) = trainingRecordDAO.deleteRecord(trainingRecord)
-
-    //Record 수정
     fun updateRecord(trainingRecord: TrainingRecord) = trainingRecordDAO.updateRecord(trainingRecord)
+    fun deleteRecord(trainingRecord: TrainingRecord) = trainingRecordDAO.deleteRecord(trainingRecord)
 }
 
+//ViewModelFactory
 class RecordListViewModelFactory(private val trainingRecordDAO: TrainingRecordDAO): ViewModelProvider.Factory {
-    //ViewModelFactory
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if(modelClass.isAssignableFrom(RecordListViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

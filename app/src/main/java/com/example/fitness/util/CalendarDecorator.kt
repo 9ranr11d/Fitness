@@ -11,6 +11,6 @@ class CalendarDecorator(private var color: Int, private var dates: HashSet<Calen
     }
 
     override fun decorate(view: DayViewFacade?) {
-        view?.addSpan(DotSpan(5F, color))
+        view?.addSpan(DotSpan(5F, color))   //캘린더에 점
     }
 }

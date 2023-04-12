@@ -15,6 +15,7 @@ import com.example.fitness.util.Utils
 import com.example.fitness.databinding.ActivitySettingBinding
 
 class SettingActivity : AppCompatActivity(), View.OnClickListener {
+//    private val TAG = javaClass.simpleName
     private lateinit var binding: ActivitySettingBinding
     private val utils = Utils()
 

@@ -1,10 +1,16 @@
 package com.example.fitness.view.activity
 
+import android.annotation.SuppressLint
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
+    private val TAG = javaClass.simpleName
     private lateinit var binding: ActivityPartsAndColorsBinding
     private lateinit var editBinding: DialogEditBinding
     private val utils = Utils()
@@ -68,7 +75,8 @@ class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
             if(receiveList[0].toInt() == ItemTouchHelper.LEFT) {
                 val delDialog = utils.initDialog(this, "삭제")
                     ?.setMessage("${receiveList[1]} - ${receiveList[2]} \n해당 부위를 포함한 모든 기록도 같이 삭제됩니다.")
-                    ?.setPositiveButton("삭제") { _, _ ->
+                    ?.setPositiveButton("삭제") { dialog, _ ->
+                        dialog.dismiss()
                         partsAndColorsListAdapter.setDelete(receiveList[3].toInt())
 
                         setDelPart(receiveList[1])
@@ -87,11 +95,12 @@ class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
 
                 val editDialog = utils.initDialog(this, "수정")
                     ?.setView(editLay)
-                    ?.setPositiveButton("수정") { _, _ ->
+                    ?.setPositiveButton("수정") { dialog, _ ->
+                        dialog.dismiss()
                         partsAndColorsListAdapter.setUpdate(
                             PartColor(
                                 editBinding.editDEditPart.text.toString(),
-                                editBinding.editDEditColor.text.toString()
+                                editBinding.textDEditColor.text.toString()
                             ),
                             receiveList[3].toInt()
                         )
@@ -124,8 +133,81 @@ class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
 
     //Dialog edit Layout
     private fun setEditLay(partColor: PartColor) {
+        //초기 설정
+        var isEdit = true
+        editBinding.textDEditColor.visibility = View.VISIBLE
+        editBinding.editDEditColor.visibility = View.INVISIBLE
+        editBinding.btnDEditColorChange.background = ContextCompat.getDrawable(this, R.drawable.img_edit)
         editBinding.editDEditPart.setText(partColor.part)
-        editBinding.editDEditColor.setText(partColor.color)
+        editBinding.textDEditColor.text = partColor.color
+
+        //Edit 버튼
+        editBinding.btnDEditColorChange.setOnClickListener {
+            if(isEdit) {
+                it.background = ContextCompat.getDrawable(this, R.drawable.img_check)
+                setLayEnabled(true)
+
+                editBinding.textDEditColor.visibility = View.INVISIBLE
+                editBinding.editDEditColor.visibility = View.VISIBLE
+                editBinding.editDEditColor.setText("${editBinding.textDEditColor.text}")
+
+                //포커스
+                editBinding.editDEditColor.requestFocus()
+                editBinding.editDEditColor.setSelection(editBinding.editDEditColor.length())
+
+                isEdit = false
+            }else {
+                setKeyBordHide(editBinding.editDEditColor.windowToken)
+                setLayEnabled(false)
+
+                it.background = ContextCompat.getDrawable(this, R.drawable.img_edit)
+
+                if("${editBinding.editDEditColor.text}".isNotEmpty())
+                    setColorPicker("${editBinding.editDEditColor.text}", "${editBinding.textDEditColor.text}")
+
+                editBinding.editDEditColor.visibility = View.INVISIBLE
+                editBinding.textDEditColor.visibility = View.VISIBLE
+                editBinding.textDEditColor.text = "${editBinding.editDEditColor.text}"
+
+                isEdit = true
+            }
+        }
+
+        initColorPicker(partColor.color)
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setLayEnabled(isEnabled: Boolean) {
+        for(i: Int in 0 until editBinding.linearDEditPicker.childCount)
+            editBinding.linearDEditPicker.getChildAt(i).setOnTouchListener { _, _ -> isEnabled }
+    }
+
+    private fun setKeyBordHide(windowToken: IBinder) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
+    }
+
+    private fun setColorPicker(color: String, reset: String) {
+        try {
+            editBinding.cPickerDEdit.color = color.toLong(16).toInt()
+        }catch(numE: java.lang.NumberFormatException) {
+            editBinding.editDEditColor.setText(reset)
+            utils.makeToast(this, "잘못된 형식입니다.")
+        }
+    }
+
+    private fun initColorPicker(color: String) {
+        editBinding.cPickerDEdit.addSVBar(editBinding.svbarDEdit)
+        editBinding.cPickerDEdit.addOpacityBar(editBinding.opacityDEdit)
+        editBinding.cPickerDEdit.addSaturationBar(editBinding.saturationDEdit)
+        editBinding.cPickerDEdit.addValueBar(editBinding.valueDEdit)
+
+        editBinding.cPickerDEdit.color = color.toLong(16).toInt()
+        editBinding.cPickerDEdit.oldCenterColor = color.toLong(16).toInt()
+        editBinding.cPickerDEdit.setOnColorChangedListener {
+            Log.i(TAG, Integer.toHexString(it))
+            editBinding.textDEditColor.text = Integer.toHexString(it)
+        }
     }
 
     //해당 부위에 대한 모든 기록 삭제
@@ -174,8 +256,11 @@ class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
 
                 val insertDialog = utils.initDialog(this, "추가")
                     ?.setView(insertLay)
-                    ?.setPositiveButton("추가") { _, _ ->
-                        partsAndColorsListAdapter.setInsert(PartColor("${editBinding.editDEditPart.text}", "${editBinding.editDEditColor.text}"))
+                    ?.setPositiveButton("추가") { dialog, _ ->
+                        dialog.dismiss()
+                        partsAndColorsListAdapter.setInsert(
+                            PartColor("${editBinding.editDEditPart.text}", "${editBinding.editDEditColor.text}")
+                        )
 
                         if (insertLay.parent != null)
                             (insertLay.parent as ViewGroup).removeView(insertLay)

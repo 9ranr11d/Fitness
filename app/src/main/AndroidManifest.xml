@@ -13,6 +13,9 @@
         android:theme="@style/Theme.Fitness"
         tools:targetApi="31">
         <activity
+            android:name=".view.activity.DayOfMonthActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.activity.PartsAndColorsActivity"
             android:exported="false" />
         <activity

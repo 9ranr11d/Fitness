@@ -27,4 +27,7 @@ interface TrainingRecordDAO {
 
     @Query("UPDATE TrainingRecord SET part = :toPart WHERE part = :fromPart")
     fun setUpdatePart(fromPart: String, toPart: String)
+
+    @Query("SELECT * FROM TrainingRecord WHERE date = :date ORDER BY time DESC")
+    fun getDayOfMonth(date: String): Flow<List<TrainingRecord>>
 }
