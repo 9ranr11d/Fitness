@@ -19,7 +19,7 @@
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/str_date"
+            android:text="@string/date"
             android:textSize="15sp" />
 
         <TextView
@@ -35,7 +35,7 @@
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/str_part"
+            android:text="@string/part"
             android:textSize="15sp" />
 
         <Spinner
@@ -50,7 +50,7 @@
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/str_name"
+            android:text="@string/name"
             android:textSize="15sp" />
 
         <EditText
@@ -68,7 +68,7 @@
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/str_set"
+            android:text="@string/set"
             android:textSize="15sp" />
 
         <TextView
@@ -87,7 +87,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/grid_d_record_target"
         android:layout_centerHorizontal="true"
-        android:text="@string/str_rep_and_wt"
+        android:text="@string/rep_and_wt"
         android:textSize="15sp" />
 
     <ScrollView

@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:gravity="center"
-            android:text="@string/str_date"
+            android:text="@string/date"
             android:textSize="15sp" />
 
         <TextView
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/str_part"
+            android:text="@string/part"
             android:textSize="15sp" />
 
         <TextView
@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:gravity="center"
-            android:text="@string/str_name"
+            android:text="@string/name"
             android:textSize="15sp" />
 
         <TextView
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/str_set"
+            android:text="@string/set"
             android:textSize="15sp" />
 
         <TextView
@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:gravity="center"
-            android:text="@string/str_rep_and_wt"
+            android:text="@string/rep_and_wt"
             android:textSize="15sp" />
 
     </LinearLayout>

@@ -42,7 +42,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/str_set"
+            android:text="@string/set"
             android:textSize="15sp" />
 
         <TextView
@@ -83,7 +83,7 @@
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/btn_timer_start"
         style="?android:attr/buttonBarButtonStyle"
-        android:text="@string/str_record"
+        android:text="@string/record"
         android:textSize="15sp" />
 
     <Button
@@ -93,7 +93,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         style="?android:attr/buttonBarButtonStyle"
-        android:text="@string/str_start"
+        android:text="@string/start"
         android:textSize="15sp" />
 
 </RelativeLayout>

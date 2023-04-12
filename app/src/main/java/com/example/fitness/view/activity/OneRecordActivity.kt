@@ -61,9 +61,9 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
         isEdit = intent.getBooleanExtra("Is_edit", false)
 
         if(isEdit)
-            binding.btnORecordComplete.text = resources.getString(R.string.str_update)
+            binding.btnORecordComplete.text = resources.getString(R.string.update)
         else
-            binding.btnORecordComplete.text = resources.getString(R.string.str_record)
+            binding.btnORecordComplete.text = resources.getString(R.string.record)
     }
 
     //NumberPicker 설정

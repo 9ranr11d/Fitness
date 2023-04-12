@@ -5,7 +5,6 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -29,7 +28,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
-    private val TAG = javaClass.simpleName
+//    private val TAG = javaClass.simpleName
     private lateinit var binding: ActivityPartsAndColorsBinding
     private lateinit var editBinding: DialogEditBinding
     private val utils = Utils()
@@ -205,7 +204,6 @@ class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
         editBinding.cPickerDEdit.color = color.toLong(16).toInt()
         editBinding.cPickerDEdit.oldCenterColor = color.toLong(16).toInt()
         editBinding.cPickerDEdit.setOnColorChangedListener {
-            Log.i(TAG, Integer.toHexString(it))
             editBinding.textDEditColor.text = Integer.toHexString(it)
         }
     }
@@ -252,7 +250,7 @@ class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
             }
             R.id.btn_parts_and_colors_add -> {
                 val insertLay = editBinding.root
-                setEditLay(PartColor("", ""))
+                setEditLay(PartColor("", "ff000000"))
 
                 val insertDialog = utils.initDialog(this, "추가")
                     ?.setView(insertLay)

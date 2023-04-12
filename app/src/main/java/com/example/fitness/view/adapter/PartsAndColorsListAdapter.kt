@@ -7,7 +7,8 @@ import com.example.fitness.util.ItemTouchHelperListener
 import com.example.fitness.data.PartColor
 import com.example.fitness.databinding.ItemRecyclerPartAndColorBinding
 
-class PartsAndColorsListAdapter(private val localList: ArrayList<PartColor>, private val onItemTouch: (String) -> Unit): RecyclerView.Adapter<PartsAndColorsListAdapter.ViewHolder>(),
+class PartsAndColorsListAdapter(private val localList: ArrayList<PartColor>, private val onItemTouch: (String) -> Unit)
+    : RecyclerView.Adapter<PartsAndColorsListAdapter.ViewHolder>(),
     ItemTouchHelperListener {
     //한 줄에 쓸 View 가져오기
     class ViewHolder(private val binding: ItemRecyclerPartAndColorBinding): RecyclerView.ViewHolder(binding.root) {
@@ -16,6 +17,9 @@ class PartsAndColorsListAdapter(private val localList: ArrayList<PartColor>, pri
             binding.textIPartAndColorColor.text = partColor.color
             binding.viewIPartAndColorColor.setBackgroundColor(partColor.color.toLong(16).toInt())
         }
+
+        val editLay = binding.relativeIPartAndColorEdit
+        val delLay = binding.relativeIPartAndColorDel
     }
 
     //한 줄에 onCreate 메서드
