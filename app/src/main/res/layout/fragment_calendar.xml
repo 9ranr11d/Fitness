@@ -11,6 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        app:mcv_selectionMode="single" />
+        app:mcv_dateTextAppearance="@style/CalendarDateText"
+        app:mcv_selectionMode="single"
+        app:mcv_leftArrow="@drawable/img_arrow_left"
+        app:mcv_rightArrow="@drawable/img_arrow_right" />
 
 </RelativeLayout>

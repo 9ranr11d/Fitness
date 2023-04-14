@@ -76,9 +76,15 @@ class PartsAndColorsActivity : AppCompatActivity(), View.OnClickListener {
                     ?.setMessage("${receiveList[1]} - ${receiveList[2]} \n해당 부위를 포함한 모든 기록도 같이 삭제됩니다.")
                     ?.setPositiveButton("삭제") { dialog, _ ->
                         dialog.dismiss()
-                        partsAndColorsListAdapter.setDelete(receiveList[3].toInt())
 
-                        setDelPart(receiveList[1])
+                        if(partsAndColorsListAdapter.itemCount > 1) {
+                            partsAndColorsListAdapter.setDelete(receiveList[3].toInt())
+                            setDelPart(receiveList[1])
+                        }
+                        else {
+                            utils.makeToast(this, "운동 부위는 최소 1부위가 있어야 합니다. ")
+                            partsAndColorsListAdapter.setUpdate(PartColor(receiveList[1], receiveList[2]), receiveList[3].toInt())
+                        }
                     }
                     ?.setNegativeButton("취소") { dialog, _ ->
                         dialog.dismiss()

@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/linear_d_edit_value"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
@@ -17,6 +17,8 @@
             android:id="@+id/edit_d_edit_part"
             android:layout_width="100dp"
             android:layout_height="48dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="100dp"
             android:hint="@string/hint_part"
             android:inputType="text"
             android:textSize="15sp"
@@ -25,13 +27,16 @@
         <TextView
             android:id="@+id/text_d_edit_color"
             android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:layout_toEndOf="@+id/edit_d_edit_part"
             android:textSize="15sp" />
 
         <EditText
             android:id="@+id/edit_d_edit_color"
             android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
+            android:layout_toEndOf="@+id/edit_d_edit_part"
             android:visibility="invisible"
             android:inputType="text"
             android:maxLength="8"
@@ -43,10 +48,11 @@
             android:id="@+id/btn_d_edit_color_change"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:layout_toEndOf="@+id/text_d_edit_color"
             android:background="@drawable/img_edit"
             tools:ignore="SpeakableTextPresentCheck" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/linear_d_edit_picker"

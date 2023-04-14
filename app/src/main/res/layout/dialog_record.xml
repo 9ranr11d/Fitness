@@ -60,6 +60,7 @@
             android:hint="@string/hint_name"
             android:textSize="15sp"
             android:inputType="text"
+            android:imeOptions="actionNext"
             android:autofillHints="no" />
 
         <!-- 세트 -->
@@ -102,7 +103,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:columnCount="6" />
+            android:columnCount="9" />
 
     </ScrollView>
 

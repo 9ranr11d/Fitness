@@ -28,7 +28,7 @@ class BreakActivity : AppCompatActivity(), View.OnClickListener {
     private var time = 0
     private lateinit var tempRecord: TrainingRecord
     private var isReserve = false
-    private var isLock = true
+    private var isLock = false
     private val idMap = HashMap<String, Int>()
 
     @SuppressLint("SetTextI18n")
@@ -167,12 +167,12 @@ class BreakActivity : AppCompatActivity(), View.OnClickListener {
         if(isLock) {
             binding.btnBreakStop.isEnabled = false
             binding.btnBreakTemp.isEnabled = false
-            binding.btnBreakLock.background = ContextCompat.getDrawable(this, R.drawable.img_unlock)
+            binding.btnBreakLock.background = ContextCompat.getDrawable(this, R.drawable.img_lock)
         }
         else {
             binding.btnBreakStop.isEnabled = true
             binding.btnBreakTemp.isEnabled = true
-            binding.btnBreakLock.background = ContextCompat.getDrawable(this, R.drawable.img_lock)
+            binding.btnBreakLock.background = ContextCompat.getDrawable(this, R.drawable.img_unlock)
         }
     }
 

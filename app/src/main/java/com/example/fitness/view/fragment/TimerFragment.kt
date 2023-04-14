@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
@@ -184,18 +185,22 @@ class TimerFragment : Fragment(), View.OnClickListener {
             val repID = View.generateViewId()   //ID
             repET.id = repID
             utils.setEdit(repET,"횟수")
+            repET.imeOptions = EditorInfo.IME_ACTION_NEXT
 
             if(i - 1 < localRep.size)
                 repET.setText(localRep[i - 1])
 
             val setTV = TextView(context)
-            setTV.text = "$i"
+            setTV.text = "${i}회"
             setTV.textSize = 15F
 
             val wtET = EditText(context)        //무게 EditText
             val wtID = View.generateViewId()    //ID
             wtET.id = wtID
             utils.setEdit(wtET, "무게")
+
+            if(i < set)
+                wtET.imeOptions = EditorInfo.IME_ACTION_NEXT
 
             if(i - 1 < localWt.size)
                 wtET.setText(localWt[i - 1])

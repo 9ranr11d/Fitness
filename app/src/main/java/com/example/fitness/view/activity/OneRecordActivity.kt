@@ -3,7 +3,10 @@ package com.example.fitness.view.activity
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -49,7 +52,6 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
 
     //Btn Listener
     private fun setBtnListener() {
-        binding.btnORecordCheck.setOnClickListener(this)
         binding.btnORecordComplete.setOnClickListener(this)
         binding.btnORecordDelete.setOnClickListener(this)
         binding.btnORecordCancel.setOnClickListener(this)
@@ -118,9 +120,22 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
     //EditText 초기값 설정
     private fun initEdit() {
         binding.editORecordName.setText(target.name)
-        binding.editORecordSet.setText(target.set.toString())
+        binding.editORecordSet.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
-        initRepAndWt(target.set, target.rep, target.wt)
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun afterTextChanged(a: Editable?) {
+                if(a!!.isNotEmpty())
+                    initRepAndWt(a.toString().toInt(), target.rep, target.wt)
+            }
+
+        })
+        binding.editORecordSet.setText(target.set.toString())
     }
 
     //횟수 및 무게 동적 뷰 생성
@@ -136,18 +151,22 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
             val repID = View.generateViewId()       //ID
             repET.id = repID
             utils.setEdit(repET,"횟수")
+            repET.imeOptions = EditorInfo.IME_ACTION_NEXT
 
             if(i < inRep.size)
                 repET.setText(inRep[i])
 
             val setTV = TextView(this)
-            setTV.text = "${i + 1}"
+            setTV.text = "${i + 1}회"
             setTV.textSize = 15F
 
             val wtET = EditText(this)        //무게 EditText
             val wtID = View.generateViewId()        //ID
             wtET.id = wtID
             utils.setEdit(wtET, "무게")
+
+            if(i < set - 1)
+                wtET.imeOptions = EditorInfo.IME_ACTION_NEXT
 
             if(i < inWt.size)
                 wtET.setText(inWt[i])
@@ -184,33 +203,38 @@ class OneRecordActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v?.id) {
-            R.id.btn_o_record_check -> initRepAndWt(binding.editORecordSet.text.toString().toInt(), target.rep, target.wt)
             R.id.btn_o_record_complete -> {
-                val updateMonth = utils.intFullFormat(binding.nPickerORecordMonth.value, 2)
-                val updateDay = utils.intFullFormat(binding.nPickerORecordDay.value, 2)
-                val updateHour = utils.intFullFormat(binding.nPickerORecordHour.value, 2)
-                val updateMinute = utils.intFullFormat(binding.nPickerORecordMinute.value, 2)
-
-                val updateDate = "${binding.nPickerORecordYear.value}-$updateMonth-$updateDay"
-                val updateTime = "$updateHour:$updateMinute"
                 val updateSet = binding.editORecordSet.text.toString().toInt()
 
-                target.date = updateDate
-                target.time = updateTime
-                target.part = "${binding.spinnerORecordPart.selectedItem}"
-                target.name = utils.checkName("${binding.editORecordName.text}")
-                target.set = updateSet
-                target.rep = utils.getEditText(binding.gridORecordRepAndWt, idMap, updateSet, "rep", "0")
-                target.wt = utils.getEditText(binding.gridORecordRepAndWt, idMap, updateSet, "wt", "0")
+                if(updateSet > 0) {
+                    val updateMonth = utils.intFullFormat(binding.nPickerORecordMonth.value, 2)
+                    val updateDay = utils.intFullFormat(binding.nPickerORecordDay.value, 2)
+                    val updateHour = utils.intFullFormat(binding.nPickerORecordHour.value, 2)
+                    val updateMinute = utils.intFullFormat(binding.nPickerORecordMinute.value, 2)
 
-                if(isEdit) {
-                    updateRecord(target)
-                    setResult(Utils.RESULT_UPDATE)
-                }else {
-                    insertRecord(target)
-                    setResult(Utils.RESULT_INSERT)
-                }
-                finish()
+                    val updateDate = "${binding.nPickerORecordYear.value}-$updateMonth-$updateDay"
+                    val updateTime = "$updateHour:$updateMinute"
+
+                    target.date = updateDate
+                    target.time = updateTime
+                    target.part = "${binding.spinnerORecordPart.selectedItem}"
+                    target.name = utils.checkName("${binding.editORecordName.text}")
+                    target.set = updateSet
+                    target.rep =
+                        utils.getEditText(binding.gridORecordRepAndWt, idMap, updateSet, "rep", "0")
+                    target.wt =
+                        utils.getEditText(binding.gridORecordRepAndWt, idMap, updateSet, "wt", "0")
+
+                    if (isEdit) {
+                        updateRecord(target)
+                        setResult(Utils.RESULT_UPDATE)
+                    } else {
+                        insertRecord(target)
+                        setResult(Utils.RESULT_INSERT)
+                    }
+                    finish()
+                }else
+                    utils.makeToast(this, "세트가 없습니다.")
             }
             R.id.btn_o_record_delete -> {
                 deleteRecord(target)

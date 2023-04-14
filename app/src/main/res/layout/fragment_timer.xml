@@ -78,22 +78,25 @@
 
     <Button
         android:id="@+id/btn_timer_record"
+        style="?android:attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_above="@+id/btn_timer_start"
-        style="?android:attr/buttonBarButtonStyle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"
         android:text="@string/record"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        tools:ignore="TextContrastCheck" />
 
     <Button
         android:id="@+id/btn_timer_start"
+        style="?android:attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        style="?android:attr/buttonBarButtonStyle"
         android:text="@string/start"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        tools:ignore="TextContrastCheck" />
 
 </RelativeLayout>
